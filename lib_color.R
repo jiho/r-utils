@@ -1,0 +1,75 @@
+#
+#	Functions to deal with colors
+#
+# (c) 2009 Jean-Olivier Irisson <irisson@normalesup.org>. 
+#	GNU General Public License http://www.gnu.org/copyleft/gpl.html
+#
+#------------------------------------------------------------
+
+contact.sheet <- function(colors)
+#	Visualizes given colors
+{
+	n = length(colors)
+	image(1:n, 1, as.matrix(1:n), col=colors, xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
+}
+
+change.level <- function(color, offset)
+#
+#	Change the level of a color (make it lighter or darker)
+#
+#	color		original color
+#	offset	[-100,100] = -100 cuts to black, 100 cuts to white 
+{
+	require(grDevices)
+	# ensure offset is within [-100,100]
+	offset = min(max(offset,-100),100)
+	# create a palette
+	# NB: it would be more natural to manipulate colors in HLS space (Hue, Level, Saturation) and move the "Level" component. However there is currently no easy way to do this in R currently so we fake it with a color ramp from black to white.
+	colors = colorRampPalette(c("black", color, "white"))(201)
+	# select a color with the offset
+	return(colors[101+offset])
+}
+
+lighter <- function(color, offset=40)
+#	Make a color lighter
+{
+	return(change.level(color, offset))
+}
+
+darker <- function(color, offset=40)
+#	Make a color darker
+{
+	return(change.level(color, -offset))
+}
+
+change.saturation <- function(color, offset)
+#
+#	Change the saturation of a color (make is flashier or duller)
+#
+#	color		original color
+#	offset	[-100,100] = -100 turns into grey, 100 maximizes saturation
+{
+	require(grDevices)
+	# convert to HSV space
+	rgbCol = col2rgb(color)
+	hsvCol = rgb2hsv(rgbCol)
+	# ensure offset is within [-100,100]
+	offset = min(max(offset,-100),100)
+	# create a palette
+	# NB: it would be more natural to manipulate colors in HLS space (Hue, Level, Saturation) and move the "Staturation" component. However there is currently no easy way to do this in R currently so we fake it with a color ramp.
+	colors = colorRampPalette(c(hsv(hsvCol[1,], 0, hsvCol[3,]), color, hsv(hsvCol[1,], 1, hsvCol[3,])))(201)	
+	# select a color with the offset
+	return(colors[101+offset])
+}
+
+saturate <- function(color, offset=40)
+#	Saturate a color
+{
+	return(change.saturation(color, offset))
+}
+
+desaturate <- function(color, offset=40)
+#	Decrease the saturation of a color
+{
+	return(change.saturation(color, -offset))
+}
