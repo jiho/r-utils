@@ -6,6 +6,8 @@
 #
 #------------------------------------------------------------
 
+# Visualize colors
+#------------------------------------------------------------
 contact.sheet <- function(colors)
 #	Visualizes given colors
 {
@@ -13,6 +15,9 @@ contact.sheet <- function(colors)
 	image(1:n, 1, as.matrix(1:n), col=colors, xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
 }
 
+
+# Manipulate colors
+#------------------------------------------------------------
 change.level <- function(color, offset)
 #
 #	Change the level of a color (make it lighter or darker)
@@ -73,3 +78,27 @@ desaturate <- function(color, offset=40)
 {
 	return(change.saturation(color, -offset))
 }
+
+
+# Color scales
+#------------------------------------------------------------
+jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+
+
+# Plotting related functions
+#------------------------------------------------------------
+drape.colors <- function(x, col)
+#
+#	Compute a matrix of colors of dimensions = dim(x) in which the intensity of the color is proportional to the value in x.
+#	For use with persp, as the color parameter
+#
+#	x			input matrix
+#	col		a vector of colors, usually a gradient
+{
+	n = length(col)
+	colMatrix = n-(x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T))*(n-1)
+	colMatrix = col[colMatrix]
+	return(colMatrix)	
+}
+
+
