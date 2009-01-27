@@ -43,7 +43,6 @@ nc.attr <- function(nc)
 	return(att)
 }
 
-
 nc.close <- function(nc)
 #
 #	Close the netCDF file
@@ -57,7 +56,7 @@ nc.reopen <- function(nc)
 #	Close and reopen the nc file (useful when it is updated)
 {
 	nc.close(nc)
-	ncNew = nc.open(gsub(".nc","",nc$filename))
+	ncNew = nc.open(nc$filename)
 	return(ncNew)
 }
 
