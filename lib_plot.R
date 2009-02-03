@@ -150,7 +150,7 @@ dev.on <- function(file="Rplots.pdf", size="beamer", unit="cm", width=NULL, heig
 	Cairo(file=file, type=type, width=swidth*m, height=sheight*m, unit=unit,  pointsize=pointsize*m, ...)
 }
 
-print.dev <- function(file="Rplots.pdf", size="beamer", unit="cm", width=NULL, height=NULL, m=3, pointsize=12, ...)
+print.dev <- function(file="Rplots.pdf", size="beamer", unit="cm", width=NULL, height=NULL, m=2, pointsize=7, ...)
 #
 #	Prints curent graphic on Cairo device
 #	arguments	see above, function dev.on
