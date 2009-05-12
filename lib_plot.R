@@ -226,6 +226,46 @@ compute.aspect <- function(x=seq(0,1,len=nrow(z)), y=seq(0,1,len=ncol(z)), z, ex
 	return(aspect)
 }
 
+persp.jo <- function(x=seq(0,1,len=nrow(z)), y=seq(0,1,len=ncol(z)), z, limits=NULL, overplot=FALSE, theta=10, phi=30, col=heat.colors(100), expand=1, ...)
+#
+#	Perspective plot with correct x,y scale for lat-lon plots
+#
+#	x, y		coordinates
+#	z			values
+#	limits	x and y limits for the plot
+# 	overplot	whether to plot on to of a previous plot (hence suppressing the box around the plot)
+#	theta,phi angles of view
+#	color		vector of color to drape on the plot
+#	expand	expansion factor for the z axis
+#	...		passed to persp
+#
+{
+	if (is.list(x)) {
+		z = x$z
+		y = x$y
+		x = x$x
+	}
+	# choose color scale
+	colMatrix = drape.color(z,col=col)
+
+	# compute aspect ratio
+	if (is.null(limits)) {
+		limits = c(range(x),range(y))
+	}
+	# in case we want a real world measure map, we need to have real measures for expand
+	# 1 degree in lat/lon is 60 minutes, 1 minute is a nautical mile (1852 m)
+	# we convert this to meters to scale the z axis and multiply by a scaling factor to see something
+	if (expand!=1) {
+		expand = 1/(1852*60) * expand		
+	}
+	
+	# plot perspective	
+	res = persp(x, y, z, xlab="lon", ylab="lat", box=!overplot, ticktype="detailed", theta=theta, phi=phi, col=colMatrix, expand=expand, xlim=limits[1:2], ylim=limits[3:4], ...)
+	return(res)	
+}
+
+
+
 persp3d.jo <- function(x=seq(0,1,len=nrow(z)), y=seq(0,1,len=ncol(z)), z, color=heat.colors(100), xlim=NULL, ylim=NULL, zlim=NULL, ...)
 #
 #	Perspective plot using openGL
