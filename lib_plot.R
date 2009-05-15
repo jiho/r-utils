@@ -101,6 +101,40 @@ frame <- function(x)
 
 # PDF devices
 #------------------------------------------------------------
+pdf <- function(..., size=c("beamer","letter","a4"))
+#
+#	Wrapper for the pdf function in grDevices which sets nice default for sizes and pointsize
+#	size		beamer, a4, letter.
+#				sets width, height and unit appropriately; if unset they need to be specified explicitely
+#
+{
+	if ( ! any(is.na(size), is.null(size))) {
+		# If size is defined, then set width and height accordingly
+		size = match.arg(size)
+		if (size=="beamer") {
+			width = 8
+			height = 6
+			pointsize = 14
+		} else if (size=="a4") {
+			width = 11.69
+			height = 82.27
+			pointsize = 14
+		} else if (size=="letter") {
+			width = 11
+			height = 8.5
+			pointsize = 14
+		}
+
+		grDevices::pdf(..., width=width, height=height, pointsize=pointsize)
+
+	} else {
+		# Else just pipe that to the pdf device unaltered
+		grDevices::pdf(...)
+	}
+}
+
+
+
 dev.on <- function(file="Rplots.pdf", size="beamer", unit="cm", width=NULL, height=NULL, m=2, pointsize=7, ...)
 #
 #	Opens a file plotting device via Cairo
