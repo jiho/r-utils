@@ -1,11 +1,12 @@
 #
 #	Additions to ggplot2
 #
-#	(c) 2007 Jean-Olivier Irisson <irisson@normalesup.org>. 
+#	(c) 2007 Jean-Olivier Irisson <irisson@normalesup.org>.
 #	GNU General Public License http://www.gnu.org/copyleft/gpl.html
 #
 #------------------------------------------------------------
 
+require("ggplot2")
 
 # Themes
 #------------------------------------------------------------
@@ -48,9 +49,7 @@ ggplot.init <- function(...)
 #	Initializes a ggplot with orthonormal aspect ratio
 #
 {
-	require("ggplot2")
-	p = ggplot(...) + coord_equal()
-	p$aspect.ratio = 1
+	p = ggplot(...) + coord_equal() + opts(aspect.ratio = 1)
 	return(p)
 }
 
@@ -64,7 +63,6 @@ ggadd.limits <- function(limits, ...)
 #
 #	limits	xmin, xmax, ymin, ymax as with regular R graphics
 {
-	require("ggplot2")
 	return(list(
 		scale_x_continuous(limits=limits[1:2]),
 		scale_y_continuous(limits=limits[3:4]))
@@ -87,18 +85,16 @@ ggadd.arrows <- function(x=NULL, lon=x$lon, lat=x$lat, u=x$u, v=x$v, depth=x$dep
 #	duration 	the lengths of the arrows are equivalent to the drift from the origin during `duration` minutes
 #
 {
-	library("ggplot2")
-	
 	if (is.null(x)) {
-		x = data.frame(lon=lon, lat=lat, u=u, v=v, depth=depth)		
+		x = data.frame(lon=lon, lat=lat, u=u, v=v, depth=depth)
 	}
-	
+
 	if (is.null(x$depth)) {
 		withDepth = FALSE
 	} else {
 		withDepth = TRUE
 	}
-	
+
 	# Add legend data as the last line of the data
 	# TODO: find a way to do that that is compatible with facetting
 	# lU = -40
@@ -121,18 +117,18 @@ ggadd.arrows <- function(x=NULL, lon=x$lon, lat=x$lat, u=x$u, v=x$v, depth=x$dep
 	# 	1112000 = one degree of latitude in cm
 	# Add it to the data.frame (because ggplot can't find it otherwise)
 	x$scaleFactor = scaleFactor
-	
+
 	# Plot arrows
 	l = list()
 	if (withDepth) {
-		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor, colour=depth), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...),  scale_colour_gradient(low=beamerLightBlue, high=beamerDarkBlue, ...))	
+		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor, colour=depth), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...),  scale_colour_gradient(low=beamerLightBlue, high=beamerDarkBlue, ...))
 	} else {
-		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...))		
+		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...))
 	}
 
  	# Add legend text
 	# l = c(l, geom_text(data=cbind(x[nrow(x),],label=lText), aes(x=lon, y=lat, label=label), hjust=0.6, vjust=-1))
-	
+
 	return(l)
 }
 
@@ -145,9 +141,9 @@ draw_range <- function(x, y, colour="black", ...)
 	if (length(x)!=length(y)) {
 		stop("x and y must be the same length in draw_range")
 	}
-	
+
 	xM = data.frame(pressure=x, value=y)
-	
+
 	# compute mean and sd of the variable
 	means = cast(xM,pressure~.,fun=mean, na.rm=T)
 	sds = cast(xM,pressure~.,fun=sd, na.rm=T)
@@ -155,7 +151,7 @@ draw_range <- function(x, y, colour="black", ...)
 
 	# plot them
 	g = list(geom_ribbon(data=xM, mapping=aes(x=pressure, min=(mean-sd), max=(mean+sd)), fill=lighter(colour,20), colour=NA, ...), geom_path(data=xM, mapping=aes(x=pressure, y=mean), colour=colour, ...))
-	
+
 	return(g)
 }
 
@@ -166,7 +162,7 @@ geom_violin <- function(data, mapping, bw="nrd0", adjust=1, kernel="gaussian", .
 #	x		grouping factor, on the x axis
 #	y		variable
 #	arguments passed to density
-#	bw		
+#	bw
 #	adjust
 #	kernel
 #	...	passed to density and to geom_polygon
@@ -176,17 +172,17 @@ geom_violin <- function(data, mapping, bw="nrd0", adjust=1, kernel="gaussian", .
 	y = deparse(mapping$y)
 	molten = melt(data, measure.var=y)
 	nbByX = cast(molten, formula=paste(x, "~ variable"), fun.aggregate=length)
-	
+
 	# remove levels for which there are less thant 2 points because density estimate fails
 	molten = molten[molten[[x]]%in%(nbByX[nbByX[y]>2,x]),]
 	molten[[x]] = factor(molten[[x]])	# remove potentially absent factor levels?
-	
+
 	# densities = cast(molten, formula=paste(x, "~ variable"), fun.aggregate=density)
 	# why doesn't this work?
 	# do it 'by hand'
-	
+
 	moltenL = split(molten$value, molten[[x]])
-	
+
 	densities = lapply(moltenL, function(x, bw, adjust, kernel, ...){
 		# compute density
 		out = density(x, bw=bw, adjust=adjust, kernel=kernel, ...)
@@ -197,14 +193,14 @@ geom_violin <- function(data, mapping, bw="nrd0", adjust=1, kernel="gaussian", .
 		out2 = data.frame(y=rev(out$y), dens=-rev(out$dens))
 		out = rbind(out,out2,NA)
 	}, bw=bw, adjust=adjust, kernel=kernel, ...)
-	
+
 	# x scale has step of 1
 	for (i in 1:length(densities)) {
 		densities[[i]]$dens = i + densities[[i]]$dens
 	}
 	xLabels = names(densities)
 	densities = do.call("rbind",densities)
-	
+
 	# build geom and set correct scale
 	g = geom_polygon(data=densities, mapping=aes(x=dens, y=y), ...)
 	s = scale_x_continuous(breaks=1:length(xLabels), labels=xLabels)

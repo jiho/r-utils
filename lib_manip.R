@@ -5,7 +5,7 @@
 #	- reorganize
 #	- etc.
 #
-#	(c) 2009 Jean-Olivier Irisson <irisson@normalesup.org>. 
+#	(c) 2009 Jean-Olivier Irisson <irisson@normalesup.org>.
 #	GNU General Public License http://www.gnu.org/copyleft/gpl.html
 #
 #------------------------------------------------------------
@@ -60,7 +60,7 @@ regrid <- function(x, shift=T)
 
 interp.x <- function(x, y=NULL, n=80, xo=seq(min(x),max(x),length=n), method="spline", ...)
 #
-#	Interpolate data y defined at points x to points xo 
+#	Interpolate data y defined at points x to points xo
 #	x can also be a data.frame with x in the first column and y in the second
 #	method can be "spline" or "linear"
 #
@@ -70,7 +70,7 @@ interp.x <- function(x, y=NULL, n=80, xo=seq(min(x),max(x),length=n), method="sp
 		y = x[,2]
 		x = x[,1]
 	}
-	
+
 	if (method == "spline") {
 		fun = splinefun(x,y)
 		yo = fun(xo)
@@ -109,31 +109,31 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 		# interpolate a regular grid from a set of irregular points
 		require("akima")
 		out = interp(x, y, z, xo, yo, linear=F, extrap=extrapolate)
-		
+
 		if (output == "data.frame") {
 			out = list2frame(out)
 		}
-	
+
 	} else if (method == "bilinear") {
 		# interpolate a regular grid from a set of gridded points
 		library("fields")
-		
+
 		# original coordinates
 		objDat = data.frame(x=x,y=y,value=z)
 		obj = list(x=sort(unique(x)),y=sort(unique(y)))
 		obj$z = as.matrix(cast(objDat,x~y))
-		
+
 		# interpolated locations
 		locs = make.surface.grid( list(xo, yo) )
-		
+
 		out = interp.surface(obj, locs)
 		out = data.frame(x=locs[,1], y=locs[,2], z=out)
-		
+
 		if (output %in% c("list","matrix")) {
 			out=frame2list(out)
 		}
 	}
-	
+
 	return(out)
 }
 
@@ -159,10 +159,10 @@ frame2list <- function(X)
 	} else if ( all(c("lon","lat") %in% names(X)) ) {
 		X = X[,c("lon","lat",setdiff(names(X),c("lon","lat")))]
 	}
-	
+
 	# renames them because its easier
 	names(X) = c("x","y","value")
-	
+
 	# create output list
 	out = list(x=sort(unique(X$x)),y=sort(unique(X$y)))
 	out$z = as.matrix(cast(X,x~y))
@@ -177,7 +177,7 @@ list2frame <- function(X)
 #	X		list with components x, y, and z
 {
 	require("reshape")
-	
+
 	if (!is.list(X)) {
 		stop("Need a list")
 	}
@@ -185,7 +185,7 @@ list2frame <- function(X)
 	if ( !all(names(X) %in% c("x","y","z")) ) {
 		stop("Need a list with 3 components named x, y and z")
 	}
-	
+
 	out = melt(X$z,varnames=c("x","y"))
 	out$x = X$x[out$x]
 	out$y = X$y[out$y]

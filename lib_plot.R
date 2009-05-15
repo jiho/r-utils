@@ -290,12 +290,12 @@ persp.jo <- function(x=seq(0,1,len=nrow(z)), y=seq(0,1,len=ncol(z)), z, limits=N
 	# 1 degree in lat/lon is 60 minutes, 1 minute is a nautical mile (1852 m)
 	# we convert this to meters to scale the z axis and multiply by a scaling factor to see something
 	if (expand!=1) {
-		expand = 1/(1852*60) * expand		
+		expand = 1/(1852*60) * expand
 	}
-	
-	# plot perspective	
+
+	# plot perspective
 	res = persp(x, y, z, xlab="lon", ylab="lat", box=!overplot, ticktype="detailed", theta=theta, phi=phi, col=colMatrix, expand=expand, xlim=limits[1:2], ylim=limits[3:4], ...)
-	return(res)	
+	return(res)
 }
 
 
