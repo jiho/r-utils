@@ -11,6 +11,37 @@
 #------------------------------------------------------------
 
 
+outliers <- function(x, method="hampel", factor=5.2)
+#
+#	Return the indices of outliers in x, according to:
+#		. Davies and Gather, The identification of multiple outliers, JASA 88 (1993), 782-801. for methods hampel, g and custom
+#		. outlier.test in package car for method bonferroni
+#	In method custom, the higher the factor the less sensible the detection of outliers
+#
+{
+	method = match.arg(method,c("hampel","g","bonferroni","custom"))
+
+	if (method=="bonferroni") {
+		library("car")
+		return(as.numeric(outlier.test(lm(x~1))$obs))
+	} else {
+		n = length(x)
+		if (method=="hampel") {
+			factor = 5.2
+		} else if (method=="g") {
+			if (n%%2==0) {
+				factor = 2.906+11.99*(n-6)^-0.5651
+			} else {
+				factor = 2.906+12.99*(n-5)^-0.5781
+			}
+		} else if (method=="custom") {
+			factor = factor
+		}
+		return(which(abs(x-median(x))>(factor*mad(x))))
+	}
+}
+
+
 # Sub-sampling or interpolation
 #------------------------------------------------------------
 
@@ -197,5 +228,68 @@ tsou <- function(x, ...)
 	x = x[intersect(names(x),element)]
 	class(x) = oldClass
 	return(x)
+}
+
+extract <- function(x, ..., drop=FALSE)
+#
+#	Restricts information in x to the lines matching the conditions in ...
+# 	The extraction criteria take the form: x_variable name = values extracted
+#		e.g. family = c("pomacentridae","acanthuridae")
+#	Both the names of the variables and the names of the values can be abbreviated as long as the abbreviation is unambiguous
+#		e.g. fam = c("pomacent","acanth")
+#	NA or NULL values extract everything (i.e. are equivalent to not specifying the condition at all)
+#
+{
+	# get selection variables
+	subsets = list(...)
+	# if there are no extraction arguments, just return the input
+	if (length(subsets) == 0) {
+		return(x)
+	}
+	# allow the selection variables to be abbreviated
+	names(subsets) = match.arg(names(subsets), names(x), several.ok=TRUE)
+	if (any(is.na(names(subsets)))) {
+		stop(paste("Ambiguity on extraction variables. Identify one in:", paste(names(x), collapse=" "), sep="\n"))
+	}
+
+	# for those which are NAs or NULL, just fill them with all possibilites
+	# for those which are character variables, allow them to be abbreviated
+	alls = lapply(x[names(subsets)], unique)
+	for (i in 1:length(subsets)) {
+		if (all(is.na(subsets[[i]])) || is.null(subsets[[i]])) {
+			subsets[[i]] = alls[[i]]
+		} else if (is.character(alls[[i]]) | is.factor(alls[[i]])) {
+			subsets[[i]] = match.arg(as.character(subsets[[i]]), alls[[i]], several.ok=TRUE)
+		}
+	}
+
+	# compute all possibilities
+	allSubsets = expand.grid(subsets)
+
+	# extract only those in common between x and those possibilities
+	out = sorted.merge(x, allSubsets)
+
+	# reorder output columns to match input
+	out = out[names(x)]
+
+	# recompute factor levels if necessary
+	if (drop) {
+		cout = out[names(subsets)]
+		factCols = sapply(cout, is.factor)
+		cout[factCols] = lapply(cout[factCols],factor)
+		out[names(subsets)] = cout
+	}
+
+	return(out)
+}
+
+sorted.merge <- function(x, y, ...)
+#
+#	Merges both arguments with merge and keeps the order in x
+#
+{
+	m <- merge(cbind(id=seq_len(nrow(x)), x), y, ...)
+	m <- m[order(m$id), !names(m)%in%"id"]
+	return(m)
 }
 
