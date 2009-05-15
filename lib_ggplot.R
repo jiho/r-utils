@@ -10,14 +10,35 @@
 # Themes
 #------------------------------------------------------------
 
-# like base graphics
-theme_base = list(grid.colour="white", grid.minor.colour="white", grid.fill="white", axis.colour="black", border.colour="black")
+# store the current theme to go back to it afterwards
+old = theme_get()
 
-# all white
-theme_white = list(grid.colour="white", grid.minor.colour="white", grid.fill="white")
+# beamer light theme
+theme_set(theme_gray())	# use default theme as reference
+theme_update(
+	panel.background = theme_rect(fill = DefaultLightBlockHeader, colour=NA),
+	panel.grid.major = theme_line(colour = DefaultLightBlock),
+	panel.grid.minor = theme_line(colour = DefaultLightBlock),
+	strip.background = theme_rect(fill = DefaultAddedBlue, colour = "white", size=2)
+)
+# store the full theme: default + modifs in a variable
+theme_blight = theme_get()
 
-# very faint grid
-theme_pale = list(grid.colour="grey90", grid.minor.colour="grey95", grid.fill="white", border.colour="grey80")
+# beamer white
+# beamer light theme
+theme_set(theme_gray())	# use default theme as reference
+theme_update(
+	panel.background = theme_blank(),
+	panel.grid.major = theme_blank(),
+	panel.grid.minor = theme_blank(),
+	strip.background = theme_rect(fill = DefaultAddedBlue, colour = "white", size=2)
+)
+# store the full theme: default + modifs in a variable
+theme_bwhite = theme_get()
+
+# go back to state before doing all that
+theme_set(old)
+
 
 
 # Plot aspect and limits

@@ -256,24 +256,3 @@ beamer.greys <- function(n, alpha = 1)
 	require(ggplot2)
 	return(alpha(colorRampPalette(c(beamerDarkGrey, beamerLightGrey))(n), alpha=alpha))
 }
-
-
-# 	ggplot2 themes
-#------------------------------------------------------------
-
-# beamer light
-theme_blight = list(
-	grid.fill=DefaultLightBlockHeader, 
-	grid.minor.colour=DefaultLightBlock, 
-	grid.colour=DefaultLightBlock, 
-	strip.gp=gpar(fill=DefaultAddedBlue, col="white", lwd=2)
-)
-
-# beamer white
-theme_bwhite = list(
-	grid.fill="white", 
-	grid.minor.colour="white", 
-	grid.colour="white", 
-	strip.gp=gpar(fill=DefaultAddedBlue, col="white", lwd=2)
-)
-
