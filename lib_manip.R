@@ -202,9 +202,15 @@ oust <- function(x, ...)
 #	x		list or data.frame
 {
 	oldClass = class(x)
-	# convert ... to a vector of characters
+	# convert all arguments in ... to a vector of characters:
 	# oust(x, foo, bar) => element=c("foo","bar")
 	element = as.character(match.call()[-1])[-1]
+	# if ... happens to contain only one element which is a vector of names, use them
+	if (length(element)==1) {
+		if (exists(element)) {
+			element = as.character(get(element))
+		}
+	}
 	# expand element names so that they can be abbreviated
 	element = match.arg(element, names(x), several.ok=T)
 	x = x[setdiff(names(x),element)]
@@ -218,11 +224,18 @@ tsou <- function(x, ...)
 #	(usefull to pull out elements of a ggplot)
 #
 #	x		list or data.frame
+#	...	vector of names or unquotted names of data.frame columns
 {
 	oldClass = class(x)
-	# convert ... to a vector of characters
+	# convert all arguments in ... to a vector of characters:
 	# oust(x, foo, bar) => element=c("foo","bar")
 	element = as.character(match.call()[-1])[-1]
+	# if ... happens to contain only one element which is a vector of names, use them
+	if (length(element)==1) {
+		if (exists(element)) {
+			element = as.character(get(element))
+		}
+	}
 	# expand element names so that they can be abbreviated
 	element = match.arg(element, names(x), several.ok=T)
 	x = x[intersect(names(x),element)]
