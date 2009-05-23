@@ -306,3 +306,10 @@ sorted.merge <- function(x, y, ...)
 	return(m)
 }
 
+closest.index <- function(x,y)
+#
+#	Find the indexes of x such as the corresponding elements are closest to the values in y
+#
+{
+	round(approx(x,1:length(x),y)$y)
+}
