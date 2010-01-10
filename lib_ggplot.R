@@ -11,35 +11,73 @@ require("ggplot2")
 # Themes
 #------------------------------------------------------------
 
-# store the current theme to go back to it afterwards
-old = theme_get()
+theme_blight <- function(base_size = 12) {
+  structure(list(
+    axis.line =         theme_blank(),
+    axis.text.x =       theme_text(size = base_size * 0.8 , lineheight = 0.9, colour = "grey50", vjust = 1),
+    axis.text.y =       theme_text(size = base_size * 0.8, lineheight = 0.9, colour = "grey50", hjust = 1),
+    axis.ticks =        theme_segment(colour = "grey50"),
+    axis.title.x =      theme_text(size = base_size, vjust = 0.5),
+    axis.title.y =      theme_text(size = base_size, angle = 90, vjust = 0.5),
+    axis.ticks.length = unit(0.15, "cm"),
+    axis.ticks.margin = unit(0.1, "cm"),
 
-# beamer light theme
-theme_set(theme_gray())	# use default theme as reference
-theme_update(
-	panel.background = theme_rect(fill = DefaultLightBlockHeader, colour=NA),
-	panel.grid.major = theme_line(colour = DefaultLightBlock),
-	panel.grid.minor = theme_line(colour = DefaultLightBlock),
-	strip.background = theme_rect(fill = DefaultAddedBlue, colour = "white", size=2)
-)
-# store the full theme: default + modifs in a variable
-theme_blight = theme_get()
+    legend.background = theme_rect(colour="white"),
+    legend.key =        theme_rect(fill = "grey95", colour = "white"),
+    legend.key.size =   unit(1.2, "lines"),
+    legend.text =       theme_text(size = base_size * 0.8),
+    legend.title =      theme_text(size = base_size * 0.8, face = "bold", hjust = 0),
+    legend.position =   "right",
 
-# beamer white
-# beamer light theme
-theme_set(theme_gray())	# use default theme as reference
-theme_update(
-	panel.background = theme_blank(),
-	panel.grid.major = theme_blank(),
-	panel.grid.minor = theme_blank(),
-	strip.background = theme_rect(fill = DefaultAddedBlue, colour = "white", size=2)
-)
-# store the full theme: default + modifs in a variable
-theme_bwhite = theme_get()
+    panel.background =  theme_rect(fill = beamer$lightBlockHeader, colour = NA),
+    panel.border =      theme_blank(),
+    panel.grid.major =  theme_line(colour = beamer$lightBlock),
+    panel.grid.minor =  theme_line(colour = beamer$lightBlock, size = 0.25),
+    panel.margin =      unit(0.25, "lines"),
 
-# go back to state before doing all that
-theme_set(old)
+    strip.background =  theme_rect(beamer$defaultAddedBlue, colour = "white"),
+    strip.text.x =      theme_text(size = base_size * 0.8),
+    strip.text.y =      theme_text(size = base_size * 0.8, angle = -90),
 
+    plot.background =   theme_rect(colour = NA, fill = "white"),
+    plot.title =        theme_text(size = base_size * 1.2),
+    plot.margin =       unit(c(1, 1, 0.5, 0.5), "lines")
+  ), class = "options")
+}
+
+theme_white <- function(base_size = 12) {
+  structure(list(
+    axis.line =         theme_blank(),
+    axis.text.x =       theme_text(size = base_size * 0.8 , lineheight = 0.9, colour = "grey50", vjust = 1),
+    axis.text.y =       theme_text(size = base_size * 0.8, lineheight = 0.9, colour = "grey50", hjust = 1),
+    axis.ticks =        theme_segment(colour = "grey50"),
+    axis.title.x =      theme_text(size = base_size, vjust = 0.5),
+    axis.title.y =      theme_text(size = base_size, angle = 90, vjust = 0.5),
+    axis.ticks.length = unit(0.15, "cm"),
+    axis.ticks.margin = unit(0.1, "cm"),
+
+    legend.background = theme_rect(colour="white"),
+    legend.key =        theme_rect(fill = "grey95", colour = "white"),
+    legend.key.size =   unit(1.2, "lines"),
+    legend.text =       theme_text(size = base_size * 0.8),
+    legend.title =      theme_text(size = base_size * 0.8, face = "bold", hjust = 0),
+    legend.position =   "right",
+
+	panel.background =  theme_blank(),
+    panel.border =      theme_blank(),
+	panel.grid.major =  theme_blank(),
+	panel.grid.minor =  theme_blank(),
+    panel.margin =      unit(0.25, "lines"),
+
+    strip.background =  theme_rect(beamer$defaultAddedBlue, colour = "white"),
+    strip.text.x =      theme_text(size = base_size * 0.8),
+    strip.text.y =      theme_text(size = base_size * 0.8, angle = -90),
+
+    plot.background =   theme_rect(colour = NA, fill = "white"),
+    plot.title =        theme_text(size = base_size * 1.2),
+    plot.margin =       unit(c(1, 1, 0.5, 0.5), "lines")
+  ), class = "options")
+}
 
 
 # Plot aspect and limits
