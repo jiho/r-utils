@@ -41,7 +41,7 @@ theme_blight <- function(base_size = 12) {
 
     plot.background =   theme_rect(colour = NA, fill = "white"),
     plot.title =        theme_text(size = base_size * 1.2),
-    plot.margin =       unit(c(1, 1, 0.5, 0.5), "lines")
+    plot.margin =       unit(rep(0.2, 4), "lines")
   ), class = "options")
 }
 
@@ -75,7 +75,7 @@ theme_white <- function(base_size = 12) {
 
     plot.background =   theme_rect(colour = NA, fill = "white"),
     plot.title =        theme_text(size = base_size * 1.2),
-    plot.margin =       unit(c(1, 1, 0.5, 0.5), "lines")
+    plot.margin =       unit(rep(0.2, 4), "lines")
   ), class = "options")
 }
 
