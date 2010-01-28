@@ -99,130 +99,60 @@ frame <- function(x)
 }
 
 
-# PDF devices
+# Quickly save graphics
 #------------------------------------------------------------
-pdf <- function(..., size=c("beamer","letter","a4"))
-#
-#	Wrapper for the pdf function in grDevices which sets nice default for sizes and pointsize
-#	size		beamer, a4, letter.
-#				sets width, height and unit appropriately; if unset they need to be specified explicitely
-#
-{
-	if ( ! any(is.na(size), is.null(size))) {
-		# If size is defined, then set width and height accordingly
-		size = match.arg(size)
-		if (size=="beamer") {
-			width = 8
-			height = 6
-			pointsize = 14
-		} else if (size=="a4") {
-			width = 11.69
-			height = 82.27
-			pointsize = 14
-		} else if (size=="letter") {
-			width = 11
-			height = 8.5
-			pointsize = 14
-		}
 
-		grDevices::pdf(..., width=width, height=height, pointsize=pointsize)
+s <- function(name, prefix=".", type=c("pdf","png"), paper=c("special", "beamer", "keynote", "latex"), width=4, height=3, units=c("in", "cm", "px"), dpi=NA_real_, pointsize=9, ...) {
 
-	} else {
-		# Else just pipe that to the pdf device unaltered
-		grDevices::pdf(...)
-	}
+    # get arguments
+    type <- match.arg(type)
+    paper <- match.arg(paper)
+    units <- match.arg(units)
+
+    # create file name
+    filename <- paste(prefix, "/", name, ".", type, sep="")
+    filename <- path.expand(filename)
+
+    # override width and height (+ units) in case paper is specified
+    if (paper == "beamer") {
+        width <- 4
+        height <- 3
+        units <- "in"
+        dpi <- 72*2
+    } else if (paper == "keynote"){
+        scale <- 1.2
+        width <- 4 * scale
+        height <- 3 * scale
+        units <- "in"
+        dpi <- 72 * scale * 1.8
+    } else if (paper == "latex"){
+        width <- 5
+        height <- 3
+        units <- "in"
+        dpi <- 72 * 5
+    }
+
+    # convert sizes to inches
+    if (units == "cm") {
+        width <- width / 2.54
+        height <- height / 2.54
+    } else if (units == "px") {
+        width <- width / dpi
+        height <- height / dpi
+    }
+
+    # print current graphics display
+    dev.print(quartz, file=filename, type=type,
+              width=width, height=height, dpi=dpi, pointsize=pointsize, ...)
+
+    invisible()
 }
 
-
-
-dev.on <- function(file="Rplots.pdf", size="beamer", unit="cm", width=NULL, height=NULL, m=2, pointsize=7, ...)
-#
-#	Opens a file plotting device via Cairo
-#
-#	file		filename
-#				file type is determined by the extension of the filename
-#	size		beamer, a4, letter.
-#				sets width, height and unit appropriately; if unset they need to be specified explicitely
-#	unit		cm by default, overridden by size
-#	width/height	override those set by size
-#	m			multiplier for the dimensions
-#	pointsize	type size
-#	...		passed to Cairo
-{
-	# set dimensions depending on size parameter
-	if (!is.null(size) & !is.na(size)) {
-		size = match.arg(size,c("none","beamer","letter","a4"))
-		if (size=="beamer") {
-			swidth = 100
-			sheight = 75
-			unit = "mm"
-		} else if (size=="a4") {
-			swidth = 297
-			sheight = 210
-			unit = "mm"
-		} else if (size=="letter") {
-			swidth = 11
-			sheight = 8.5
-			unit = "in"
-		}
-	}
-
-	# override with custom definitions if there are any
-	if (!is.null(width)) {
-		swidth = width
-	}
-	if (!is.null(height)) {
-		sheight = height
-	}
-
-	# detect file type
-	type = strsplit(file,"\\.")
-	type = type[[1]][length(type[[1]])]
-
-	# open the device via Cairo
-	library("Cairo")
-	Cairo(file=file, type=type, width=swidth*m, height=sheight*m, unit=unit,  pointsize=pointsize*m, ...)
-}
-
-print.dev <- function(file="Rplots.pdf", size="beamer", unit="cm", width=NULL, height=NULL, m=2, pointsize=7, ...)
-#
-#	Prints curent graphic on Cairo device
-#	arguments	see above, function dev.on
-#
-{
-	# set dimensions depending on size parameter
-	if (!is.null(size) & !is.na(size)) {
-		size = match.arg(size,c("none","beamer","letter","a4"))
-		if (size=="beamer") {
-			swidth = 100
-			sheight = 75
-			unit = "mm"
-		} else if (size=="a4") {
-			swidth = 297
-			sheight = 210
-			unit = "mm"
-		} else if (size=="letter") {
-			swidth = 11
-			sheight = 8.5
-			unit = "in"
-		}
-	}
-
-	# override with custom definitions if there are any
-	if (!is.null(width)) {
-		swidth = width
-	}
-	if (!is.null(height)) {
-		sheight = height
-	}
-
-	# detect file type
-	type = strsplit(file,"\\.")
-	type = type[[1]][length(type[[1]])]
-
-	# print current device on a Cairo one
-	library("Cairo")
-	dev.print(Cairo, file=file, type=type, width=swidth*m, height=sheight*m, unit=unit,  pointsize=pointsize, ...)
+print.dev <- function(file="Rplots.pdf", size="beamer", unit="cm", m=2, pointsize=7, ...) {
+    name <- substr(file, 1, nchar(file)-3)
+    type <- substr(file, nchar(file)-2, nchar(file))
+    pointsize=9
+    s(name=name, type=type, paper=size, units=unit, ...)
 }
 
 
