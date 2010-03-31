@@ -62,7 +62,7 @@ img <- function(pattern="", extension=c("png", "jpeg", "jpg"), width=800, height
     }
 
     # setup name
-    name <- paste(pattern, "-%09d.", extension, sep="")
+    name <- paste(pattern, "%09d.", extension, sep="")
 
     # open the device
     if (extension == "png") {
@@ -73,7 +73,7 @@ img <- function(pattern="", extension=c("png", "jpeg", "jpg"), width=800, height
     return(invisible(name))
 }
 
-encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M"),codec,".mp4",sep=""), pattern="", extension=c("png", "jpg"), fps=6, codec=c("mpeg4","h264","h264lossless","divx","xvid"), clean=F)
+encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp4",sep=""), pattern="", extension=c("png", "jpg"), fps=6, codec=c("mpeg4","h264","h264lossless","divx","xvid"), clean=F, verbose=F)
 #
 #	Encode a sequence of images into a movie using ffmpeg
 #
