@@ -122,8 +122,10 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 
 	# encoding
 	commandLine = paste("ffmpeg -r ", fps, " -i ", tmp, "/encode-", "%09d.", extension, " ", opts, " ", name, sep="")
-	cat("\n",commandLine, "\n\n")
-	system(commandLine)
+	if (verbose) {
+    	cat("\nCommand:",commandLine, "\n\n")
+	}
+	system(commandLine, ignore.stderr=!verbose)
 
 	# cleaning
 	system(paste("rm -f ", tmp, "/encode-*", sep=""))
