@@ -332,12 +332,21 @@ ggadd.field <- function(nc, uVariable="u", vVariable="v", sub=5, scale=1, ...)
 	# determine a scaling to make the arrows readable 
 	stepSizes = diff(unique(speeds[,1]))
 	speeds$scale = stepSizes[1]*sub*scale
-	
- 	# g = geom_segment(data=speeds, aes_string(x=coordsName[1], y=coordsName[2]), aes(xend=(x+scale*u), yend=(y+scale*v)))
- 	g = geom_segment(data=speeds, aes(x=x, y=y, xend=(x+scale*u), yend=(y+scale*v)), arrow=arrow(length=unit(0.002,"npc"), angle=15))
 
-	g$title = 
-	
+    # compute end points
+    xName <- coordsName[1]
+    yName <- coordsName[2]
+	speeds$xEnd <- speeds[,xName]+scale*speeds$u
+	speeds$yEnd <- speeds[,yName]+scale*speeds$v
+
+    # put NAs where speed is 0
+    speeds$xEnd[speeds$u==0 & speeds$v==0] <- NA
+    # speeds$yEnd[speeds$u==0 & speeds$v==0] <- NA
+    # NB: one NA is enough to not plot the segment
+
+    # create arrow field
+    g = geom_segment(data=speeds, aes_string(x=xName, y=yName, xend="xEnd", yend="yEnd"), arrow=arrow(length=unit(0.015,"npc"), angle=15))
+
 	# Add title/legend
 	varnames = paste(sliceU$var$longname,sliceV$var$longname,sep="-")
 	extras = sliceU$dims[!isCoord]
