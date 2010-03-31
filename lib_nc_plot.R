@@ -2,7 +2,7 @@
 #	Access to and plots of NetCDF files
 #		with particular application to OPSIME output
 #
-#	(c) 2007 Jean-Olivier Irisson <irisson@normalesup.org>. 
+#	(c) 2007 Jean-Olivier Irisson <irisson@normalesup.org>.
 #	GNU General Public License http://www.gnu.org/copyleft/gpl.html
 #
 #------------------------------------------------------------
@@ -76,18 +76,18 @@ nc.slice <- function(nc, varname=NA, ...)
 #
 {
 	extract=list(...)
-	
+
 	# Fetch variable name
 	varname = match.arg(varname, names(nc$var))
-	
+
 	# Get info for this variable
 	cVar = nc$var[[varname]]		# current variable
 	cDims = nc$dim[cVar$dimids]	# current dimensions
 	cDimNames = sapply(cDims,function(x){x$name})	# current dimension names
-	
+
 	# Check whether variable is extracted based on dimension names or list of all dimensions
 	extractNames = names(extract)
-	
+
 	if (!is.null(extractNames)) {
 		# 1. Use the names
 
@@ -115,7 +115,7 @@ nc.slice <- function(nc, varname=NA, ...)
 		}
 	}
 	names(cExtract) = cDimNames
-	
+
 	# For NA extraction vectors, just keep the full dimension
 	# For the other ones, keep the indices
 	for (i in 1:length(cDims)) {
@@ -132,7 +132,7 @@ nc.slice <- function(nc, varname=NA, ...)
 	start = sapply(indices,min)
 	stop =  sapply(indices,max)
 	count = stop-start+1
-	
+
 	# Extract slice
 	slice = get.var.ncdf(nc, varname, start=start, count=count)
 	cVar$vals = slice
@@ -146,7 +146,7 @@ slice2data <- function(slice)
 #
 {
 	require("reshape")
-	
+
 	# Get plot coordinates : first two dimensions such that the index length is not 1
 	isCoord = lapply(slice$dims,`[[`,"vals")
 	isCoord = (sapply(isCoord,length)>1)
@@ -154,9 +154,13 @@ slice2data <- function(slice)
 	# 	stop("Not a 2 D slice")
 	# }
 	coords = slice$dims[isCoord]
-	
+
 	# Melt data extracted from netCDF file
 	var = melt(slice$var$vals,varnames=sapply(coords,`[[`,"name"))
+
+	# fetch variable name
+	var <- rename(var, c(value=slice$var$name))
+
 	# fetch real coordinates values
 	for (i in 1:length(coords)) {
 		var[,i] = coords[[1]]$vals[var[,i]]
@@ -177,7 +181,7 @@ f.contour.slice <- function(slice, min=NA, max=NA, nlevels=200, ...)
 #	...		further arguments to filled.contour
 #
 {
-	
+
 	# Get plot coordinates : first two dimensions such that the index length is not 1
 	isCoord = lapply(slice$dims,`[[`,"vals")
 	isCoord = (sapply(isCoord,length)>1)
@@ -193,16 +197,16 @@ f.contour.slice <- function(slice, min=NA, max=NA, nlevels=200, ...)
 	if (is.na(max)) {
 		max = max(slice$var$vals)
 	}
-	
+
 	filled.contour(coords[[1]]$vals, coords[[2]]$vals, slice$var$vals, zlim=c(min,max), color=jet.colors, asp=1, nlevels=nlevels, ...)
-	
+
 	# Title
 	title(main=slice$var$longname, sub=slice$var$units, xlab=paste(coords[[1]]$name, coords[[1]]$units),ylab=paste(coords[[2]]$name, coords[[2]]$units))
-	
+
 	# Legend for non coords variables
 	extras = slice$dims[!isCoord]
 	extrasLegend = paste(sapply(extras,`[`,c("name","vals")),collapse=": ")
-	mtext(extrasLegend)	
+	mtext(extrasLegend)
 }
 
 contour.slice <- function(slice, min=NA, max=NA, nlevels=10, ...)
@@ -214,7 +218,7 @@ contour.slice <- function(slice, min=NA, max=NA, nlevels=10, ...)
 #	...		further arguments to contour
 #
 {
-	
+
 	# Get plot coordinates : first two dimensions such that the index length is not 1
 	isCoord = lapply(slice$dims,`[[`,"vals")
 	isCoord = (sapply(isCoord,length)>1)
@@ -230,16 +234,16 @@ contour.slice <- function(slice, min=NA, max=NA, nlevels=10, ...)
 	if (is.na(max)) {
 		max = max(slice$var$vals)
 	}
-	
+
 	contour(coords[[1]]$vals, coords[[2]]$vals, slice$var$vals, zlim=c(min,max), asp=1, col = jet.colors(nlevels), nlevels=nlevels, ...)
-	
+
 	# Title
 	title(main=slice$var$longname, sub=slice$var$units, xlab=paste(coords[[1]]$name, coords[[1]]$units),ylab=paste(coords[[2]]$name, coords[[2]]$units))
-	
+
 	# Legend for non coords variables
 	extras = slice$dims[!isCoord]
 	extrasLegend = paste(sapply(extras,`[`,c("name","vals")),collapse=": ")
-	mtext(extrasLegend)	
+	mtext(extrasLegend)
 }
 
 ggadd.tile <- function(slice, min=NA, max=NA)
@@ -267,20 +271,20 @@ ggadd.tile <- function(slice, min=NA, max=NA)
 	if (is.na(max)) {
 		max = max(slice$var$vals)
 	}
-	
+
 	# Melt data extracted from netCDF file
 	var = melt(slice$var$vals,varnames=sapply(coords,`[[`,"name"))
 	names(var)[1:2] = c("x","y")
 	# fetch real coordinates values
 	var[,1] = coords[[1]]$vals[var[,1]]
 	var[,2] = coords[[2]]$vals[var[,2]]
-		
+
 	# Tile
 	g = geom_tile(data=var,mapping=aes(x=x,y=y,fill=value))
-	
+
 	# Axes labels
 	g = c(g, scale_x_continuous(paste(coords[[1]]$name, coords[[1]]$units)), scale_y_continuous(paste(coords[[2]]$name, coords[[2]]$units)) )
-	
+
 	# Add nice color gradient
 	g = c(g,scale_fill_gradient2(paste(slice$var$name, slice$var$units), limits=c(min,max), low="blue", mid="yellow", high="red"))
 
@@ -288,8 +292,8 @@ ggadd.tile <- function(slice, min=NA, max=NA)
 	extras = slice$dims[!isCoord]
 	extrasLegend = paste(sapply(extras,`[`,c("name","vals")),collapse=": ")
 	title = paste(slice$var$longname,extrasLegend,sep=" ")
-		
-	return(list(g,opts(title=title)))	
+
+	return(list(g,opts(title=title)))
 }
 
 ggadd.field <- function(nc, uVariable="u", vVariable="v", sub=5, scale=1, ...)
@@ -304,7 +308,7 @@ ggadd.field <- function(nc, uVariable="u", vVariable="v", sub=5, scale=1, ...)
 	# Extract U and V
 	sliceU = nc.slice(nc, uVariable, ...)
 	sliceV = nc.slice(nc, vVariable, ...)
-	
+
 	# Get plot coordinates : first two dimensions such that the index length is not 1
 	# Do it for U and not V but they should really be the same
 	isCoord = lapply(sliceU$dims,`[[`,"vals")
@@ -329,7 +333,7 @@ ggadd.field <- function(nc, uVariable="u", vVariable="v", sub=5, scale=1, ...)
 	speeds[,1] = coords[[1]]$vals[speeds[,1]]
 	speeds[,2] = coords[[2]]$vals[speeds[,2]]
 
-	# determine a scaling to make the arrows readable 
+	# determine a scaling to make the arrows readable
 	stepSizes = diff(unique(speeds[,1]))
 	speeds$scale = stepSizes[1]*sub*scale
 
@@ -348,10 +352,10 @@ ggadd.field <- function(nc, uVariable="u", vVariable="v", sub=5, scale=1, ...)
     g = geom_segment(data=speeds, aes_string(x=xName, y=yName, xend="xEnd", yend="yEnd"), arrow=arrow(length=unit(0.015,"npc"), angle=15))
 
 	# Add title/legend
-	varnames = paste(sliceU$var$longname,sliceV$var$longname,sep="-")
-	extras = sliceU$dims[!isCoord]
-	extrasLegend = paste(sapply(extras,`[`,c("name","vals")),collapse=": ")
-	title = paste(varnames,extrasLegend,sep="\n")
-	
-	return(list(g, opts(title=title)))
+    varnames = paste(sliceU$var$longname,sliceV$var$longname,sep=" x ")
+    extras = sliceU$dims[!isCoord]
+    extrasLegend = paste(sapply(extras,`[`,c("name","vals")),collapse=": ")
+    title = paste(varnames,extrasLegend,sep="\n")
+
+    return(list(g, opts(title=title)))
 }
