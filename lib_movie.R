@@ -97,9 +97,14 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 	   fps <- 5
 	}
 
-	# create temporary file list
-	tmp <- tempdir()
+    # detect images
 	imgFiles <- system(paste("ls ", pattern, "*.", extension, sep=""), intern=T)
+	if (length(imgFiles)==0) {
+	   stop("No images matching this pattern: ", pattern, "*.", extension )
+	}
+
+	# create temporary file list with the correct syntax for ffmpeg
+	tmp <- tempdir()
 	count <- 1
 	for (file in imgFiles) {
 	    system(paste("ln ", file, " ", tmp, "/encode-", sprintf("%09d", count), ".", extension, sep=""))
