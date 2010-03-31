@@ -20,17 +20,17 @@ seq.image <- function(i, extension="png", pattern="", size.multi=1)
     warning("DEPRECATED - Use png(%05d,png) or img() before a loop")
 
 	extension = match.arg(extension,c("jpg","png"))
-	
+
 	# build file name
 	name = paste(formatC(i, width=4, flag="0"), pattern,".",extension,sep="")
-	
+
 	require("Cairo")
-	
+
 	# close the previous device if it was a Cairo device opened here, so that the function can be called in a loop and produce successive images
 	if (names(dev.cur())=="Cairo" & length(dev.list())>=2) {
 		dev.off()
 	}
-	
+
 	# open a new one
 	Cairo(file=name, type=extension, w=800*size.multi, h=592*size.multi, background="white", res=NA)
 }
