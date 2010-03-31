@@ -1,7 +1,7 @@
 #
 #	Plotting functions to encode a series of images into a movie
 #
-#	(c) 2007-2009 Jean-Olivier Irisson <irisson@normalesup.org>. 
+#	(c) 2007-2009 Jean-Olivier Irisson <irisson@normalesup.org>.
 #	GNU General Public License http://www.gnu.org/copyleft/gpl.html
 #
 #------------------------------------------------------------
@@ -17,6 +17,8 @@ seq.image <- function(i, extension="png", pattern="", size.multi=1)
 #	size.multi	size multiplier. base size is 800*592
 #
 {
+    warning("DEPRECATED - Use png(%05d,png) or img() before a loop")
+
 	extension = match.arg(extension,c("jpg","png"))
 	
 	# build file name
@@ -33,38 +35,94 @@ seq.image <- function(i, extension="png", pattern="", size.multi=1)
 	Cairo(file=name, type=extension, w=800*size.multi, h=592*size.multi, background="white", res=NA)
 }
 
-encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d"),".avi",sep=""), extension="png", pattern="", fps=4, bitrate=2000, codec="divx", clean=F)
+
+img <- function(pattern="", extension=c("png", "jpeg", "jpg"), width=800, height=592, ...)
 #
-#	Encode a sequence of images into a movie using mencoder
-#	http://www.mplayerhq.hu/
+#   Open a bitmap device to plot a sequence of images (used to encode a movie)
 #
-#	name			name of the output movie, extension determines movie type
-#	extension	type of the images to encode
-#	pattern		pattern to look for in the names of the images to encode
-#	fps			frame per second of the movie
-#	bitrate		bitrate of the movive (higher = better quality)
-#	codec			video codec
-#	clean			whether to remove image files when done
+#	extension	type of the file to plot
+#	pattern		pattern to add to the filename, before the extension
+#	size.multi	size multiplier. base size is 800*592
 #
 {
-	extension = match.arg(extension,c("jpg","png"))
-	codec = match.arg(codec,c("divx","xvid"))
-	
-	# codec selection
-	if (codec=="divx") {
-		videoOpts=paste("-ovc lavc -lavcopts vcodec=mpeg4:vbitrate=",bitrate," -ffourcc divx",sep="")
-	} else if (codec=="xvid") {
-		# NB causes issues at the start of the video
-		videoOpts=paste("-ovc xvid -xvidencopts bitrate=",bitrate," -ffourcc xvid",sep="")
+    # get arguments
+	extension = match.arg(extension)
+
+    # compute the size
+    # should be multiples of 16 for best compression
+    wR <- width %% 16
+    if (wR != 0) {
+        width <- as.integer(width - wR)
+        warning("Width was rounded to the nearest 16 px for better compression")
+    }
+    hR <- height %% 16
+    if (hR != 0) {
+        height <- as.integer(height - hR)
+        warning("Height was rounded to the nearest 16 px for better compression")
+    }
+
+    # setup name
+    name <- paste(pattern, "-%09d.", extension, sep="")
+
+    # open the device
+    if (extension == "png") {
+        png(filename=name, width=width, height=height, ...)
+    } else if (extension == "jpg") {
+        jpeg(filename=name, width=width, height=height, ...)
+    }
+    return(invisible(name))
+}
+
+encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M"),codec,".mp4",sep=""), pattern="", extension=c("png", "jpg"), fps=6, codec=c("mpeg4","h264","h264lossless","divx","xvid"), clean=F)
+#
+#	Encode a sequence of images into a movie using ffmpeg
+#
+#	name        name of the output movie, extension determines movie type
+#	extension   type of the images to encode
+#	pattern     pattern to look for in the names of the images to encode
+#	fps         frame per second of the movie
+#	codec       video codec
+#	clean       whether to remove image files when done
+#
+{
+    # detect arguments
+	extension <- match.arg(extension)
+	codec <- match.arg(codec)
+	if (codec %in% c("divx","xvid")) {
+	   warning("DiVX or XViD are treated as generic mpeg-4 for better compatibility.")
+	   codec <- "mpeg4"
 	}
-	
+	if (fps < 5) {
+	   warning("FPS lower than 5 is not supported")
+	   fps <- 5
+	}
+
+	# create temporary file list
+	tmp <- tempdir()
+	imgFiles <- system(paste("ls ", pattern, "*.", extension, sep=""), intern=T)
+	count <- 1
+	for (file in imgFiles) {
+	    system(paste("ln ", file, " ", tmp, "/encode-", sprintf("%09d", count), ".", extension, sep=""))
+	    count <- count+1
+	}
+
+	# codec selection
+	if (codec=="mpeg4") {
+	    opts <- "-b 4000k -bt 8000k"
+	} else if (codec=="h264") {
+	    opts <- "-vcodec libx264 -vpre hq -qmin 1 -crf 0"
+	} else if (codec=="h264lossless") {
+		opts <-  "-vcodec libx264 -vpre lossless_ultrafast"
+	}
+
 	# encoding
-	commandLine = paste("mencoder mf://*",pattern,"*.",extension," -mf fps=",fps,":type=",extension," ",videoOpts," -nosound -o ",name,sep="")
-	cat(commandLine)
+	commandLine = paste("ffmpeg -r ", fps, " -i ", tmp, "/encode-", "%09d.", extension, " ", opts, " ", name, sep="")
+	cat("\n",commandLine, "\n\n")
 	system(commandLine)
-	
+
 	# cleaning
+	system(paste("rm -f ", tmp, "/encode-*", sep=""))
 	if (clean) {
-		system(paste("rm -f *",pattern,"*.",extension,sep=""))
+        system(paste("rm -f ", pattern, "*.", extension, sep=""))
 	}
 }
