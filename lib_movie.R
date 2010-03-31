@@ -117,7 +117,7 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 	} else if (codec=="h264") {
 	    opts <- "-vcodec libx264 -vpre hq -qmin 1 -crf 0"
 	} else if (codec=="h264lossless") {
-		opts <-  "-vcodec libx264 -vpre lossless_ultrafast"
+		opts <-  "-vcodec libx264 -vpre lossless_medium"
 	}
 
 	# encoding
