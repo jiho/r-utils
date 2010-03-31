@@ -90,20 +90,16 @@ nc.slice <- function(nc, varname=NA, ...)
 	
 	if (!is.null(extractNames)) {
 		# 1. Use the names
-		
-		# Fetch correct names
-		extractNames = match.arg(extractNames, cDimNames, several.ok=TRUE)
-		# names(extract) = dimNames
-		# TODO add a check for the number of non empty/non matched names
-		
-		# Create extract list with dimensions in correct order
-		# Empty list with NAs
-		cExtract = vector("list", length(cDims))
-		cExtract[] = NA
-		# Fill with the info we have
-		idx = match(extractNames, cDimNames)
-		cExtract[idx] = extract
-		
+
+		# detect matching names
+		matching <- pmatch(cDimNames, extractNames, duplicates.ok=TRUE)
+
+        # keep only dimensions that match
+		cExtract <- extract[matching]
+
+        # dimensions that do not match are NULL, replace that by NA
+		cExtract[is.na(matching)] <- NA
+
 	} else {
 		# 2. Consider that the list contains all the dimensions in the correct order or is empty entirely
 		if (length(extract) == 0 ) {
