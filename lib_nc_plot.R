@@ -278,6 +278,7 @@ ggadd.tile <- function(slice, min=NA, max=NA)
 	# fetch real coordinates values
 	var[,1] = coords[[1]]$vals[var[,1]]
 	var[,2] = coords[[2]]$vals[var[,2]]
+    # TODO Use names instead of juste 1,2 here
 
 	# Tile
 	g = geom_tile(data=var,mapping=aes(x=x,y=y,fill=value))
