@@ -73,7 +73,7 @@ img <- function(pattern="", extension=c("png", "jpeg", "jpg"), width=800, height
     return(invisible(name))
 }
 
-encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp4",sep=""), pattern="", extension=c("png", "jpg"), fps=6, codec=c("mpeg4","h264","h264lossless","divx","xvid"), clean=F, verbose=F)
+encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp4",sep=""), pattern="", extension=c("png", "jpg"), fps=6, codec=c("h264","h264lossless","mpeg4","divx","xvid"), clean=F, verbose=F)
 #
 #	Encode a sequence of images into a movie using ffmpeg
 #
@@ -112,13 +112,13 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 	}
 
 	# codec selection
-	if (codec=="mpeg4") {
-	    opts <- "-b 4000k -bt 8000k"
-	} else if (codec=="h264") {
-	    opts <- "-vcodec libx264 -vpre hq -qmin 1 -crf 0"
+    if (codec=="h264") {
+        opts <- "-vcodec libx264 -vpre max -crf 16 -vpre baseline -threads 0"
 	} else if (codec=="h264lossless") {
-		opts <-  "-vcodec libx264 -vpre lossless_medium"
-	}
+		opts <- "-vcodec libx264 -vcodec libx264 -vpre lossless_max -vpre baseline -threads 0"
+	} else 	if (codec=="mpeg4") {
+        opts <- "-vcodec mpeg4 -b 2000k -bt 4000k"
+    }
 
 	# encoding
 	commandLine = paste("ffmpeg -r ", fps, " -i ", tmp, "/encode-", "%09d.", extension, " ", opts, " ", name, sep="")
