@@ -143,7 +143,8 @@ s <- function(name, prefix=".", type=c("pdf","png"), paper=c("special", "beamer"
 
     # print current graphics display
     dev.print(quartz, file=filename, type=type,
-              width=width, height=height, dpi=dpi, pointsize=pointsize, ...)
+              width=width, height=height, dpi=dpi, pointsize=pointsize, ...
+    )
 
     invisible()
 }
