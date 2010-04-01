@@ -87,7 +87,7 @@ jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F"
 
 # Plotting related functions
 #------------------------------------------------------------
-drape.colors <- function(x, col)
+drape.color <- function(x, col)
 #
 #	Compute a matrix of colors of dimensions = dim(x) in which the intensity of the color is proportional to the value in x.
 #	For use with persp, as the color parameter

@@ -248,8 +248,7 @@ persp3d.jo <- function(x=seq(0,1,len=nrow(z)), y=seq(0,1,len=ncol(z)), z, color=
 	}
 
 	# define color scale
-	# requires lib_color.R
-	color = drape.colors(z, color)
+	color = drape.color(z, color)
 
 	# define limits
 	if (is.null(xlim)) {
