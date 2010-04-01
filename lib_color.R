@@ -61,7 +61,7 @@ change.saturation <- function(color, offset)
 	# ensure offset is within [-100,100]
 	offset = min(max(offset,-100),100)
 	# create a palette
-	# NB: it would be more natural to manipulate colors in HLS space (Hue, Level, Saturation) and move the "Staturation" component. However there is currently no easy way to do this in R currently so we fake it with a color ramp.
+	# NB: it would be more natural to manipulate colors in HLS space (Hue, Level, Saturation) and move the "Saturation" component. However there is currently no easy way to do this in R currently so we fake it with a color ramp.
 	colors = colorRampPalette(c(hsv(hsvCol[1,], 0, hsvCol[3,]), color, hsv(hsvCol[1,], 1, hsvCol[3,])))(201)	
 	# select a color with the offset
 	return(colors[101+offset])
