@@ -113,9 +113,9 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 
 	# codec selection
     if (codec=="h264") {
-        opts <- "-vcodec libx264 -vpre max -crf 16 -vpre baseline -threads 0"
+        opts <- "-vcodec libx264 -vpre max -crf 16 -vpre baseline"
 	} else if (codec=="h264lossless") {
-		opts <- "-vcodec libx264 -vcodec libx264 -vpre lossless_max -vpre baseline -threads 0"
+		opts <- "-vcodec libx264 -vcodec libx264 -vpre lossless_max -vpre baseline"
 	} else 	if (codec=="mpeg4") {
         opts <- "-vcodec mpeg4 -b 2000k -bt 4000k"
     }
