@@ -1,4 +1,4 @@
-require.local <- function(fun, lib)
+require.local <- function(fun, lib, quietly=FALSE)
 #
 #	Searches for function "fun" and sources "lib" in 
 #	case it is not found
@@ -8,7 +8,9 @@ require.local <- function(fun, lib)
 #
 {
 	if (! (deparse(substitute(fun)) %in% ls(".GlobalEnv") && class(fun) == "function") ) {
-		cat("Sourcing", lib,"...\n")
+	    if (!quietly) {
+    		cat("Sourcing", lib,"...\n")	       
+	    }
 		source(lib)
 	}
 }
