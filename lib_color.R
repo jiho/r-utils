@@ -25,7 +25,7 @@ change.level <- function(color, offset)
 #	color		original color
 #	offset	[-100,100] = -100 cuts to black, 100 cuts to white 
 {
-	require(grDevices)
+	suppressPackageStartupMessages(require("grDevices"))
 	# ensure offset is within [-100,100]
 	offset = min(max(offset,-100),100)
 	# create a palette
@@ -54,7 +54,7 @@ change.saturation <- function(color, offset)
 #	color		original color
 #	offset	[-100,100] = -100 turns into grey, 100 maximizes saturation
 {
-	require(grDevices)
+	suppressPackageStartupMessages(require("grDevices"))
 	# convert to HSV space
 	rgbCol = col2rgb(color)
 	hsvCol = rgb2hsv(rgbCol)

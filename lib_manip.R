@@ -22,7 +22,7 @@ outliers <- function(x, method="hampel", factor=5.2)
 	method = match.arg(method,c("hampel","g","bonferroni","custom"))
 
 	if (method=="bonferroni") {
-		library("car")
+		suppressPackageStartupMessages(require("car"))
 		return(as.numeric(outlier.test(lm(x~1))$obs))
 	} else {
 		n = length(x)
@@ -99,7 +99,7 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 #		"list,matrix"	list with components x, y, and z (for persp, contour)
 #
 {
-	require("reshape")
+	suppressPackageStartupMessages(require("reshape"))
 
 	# parse arguments
 	method = match.arg(method,c("akima","bilinear"))
@@ -107,7 +107,7 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 
 	if (method=="akima") {
 		# interpolate a regular grid from a set of irregular points
-		require("akima")
+		suppressPackageStartupMessages(require("akima"))
 		out = interp(x, y, z, xo, yo, linear=F, extrap=extrapolate)
 
 		if (output == "data.frame") {
@@ -116,7 +116,7 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 
 	} else if (method == "bilinear") {
 		# interpolate a regular grid from a set of gridded points
-		library("fields")
+		suppressPackageStartupMessages(require("fields"))
 
 		# original coordinates
 		objDat = data.frame(x=x,y=y,value=z)
@@ -147,7 +147,7 @@ frame2list <- function(X)
 #
 #	X		data.frame with components x, y (or lon, lat) and one other
 {
-	require("reshape")
+	suppressPackageStartupMessages(require("reshape"))
 
 	if (!is.data.frame(X)) {
 		stop("Need a data.frame")
@@ -176,7 +176,7 @@ list2frame <- function(X)
 #
 #	X		list with components x, y, and z
 {
-	require("reshape")
+	suppressPackageStartupMessages(require("reshape"))
 
 	if (!is.list(X)) {
 		stop("Need a list")

@@ -15,7 +15,7 @@ nc.open <- function(filename="opsime.nc")
 #
 #	Opens netCDF file and compute useful indexes
 {
-	require("ncdf")
+	suppressPackageStartupMessages(require("ncdf"))
 
 	# Opens the dataset and fetches its attributes
 	nc = open.ncdf(filename)
@@ -47,7 +47,7 @@ nc.close <- function(nc)
 #
 #	Close the netCDF file
 {
-	require("ncdf")
+	suppressPackageStartupMessages(require("ncdf"))
 	close.ncdf(nc)
 }
 
@@ -145,7 +145,7 @@ slice2data <- function(slice)
 #	Melt 2D slice into a data.frame
 #
 {
-	require("reshape")
+	suppressPackageStartupMessages(require("reshape"))
 
 	# Get plot coordinates : first two dimensions such that the index length is not 1
 	isCoord = lapply(slice$dims,`[[`,"vals")
@@ -254,7 +254,7 @@ ggadd.tile <- function(slice, min=NA, max=NA)
 #	min/max	range of values to include in the plot and legend
 #
 {
-	require("ggplot2")
+	suppressPackageStartupMessages(require("ggplot2"))
 
 	# Get plot coordinates : first two dimensions such that the index length is not 1
 	isCoord = lapply(slice$dims,`[[`,"vals")

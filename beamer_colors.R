@@ -219,31 +219,31 @@ beamer$lightGrey = beamer$beetleAddedGrey1
 beamer.blues <- function(n, alpha = 1)
 #	Generate n shades of blue
 {
-	require(graphics)
-	require(ggplot2)
+	suppressPackageStartupMessages(require("graphics"))
+	suppressPackageStartupMessages(require("ggplot2"))
 	return(alpha(colorRampPalette(c(beamer$darkBlue, beamer$lightBlue))(n), alpha=alpha))
 }
 
 beamer.greens <- function(n, alpha = 1)
 # 	Generate n shades of green
 {
-	require(graphics)
-	require(ggplot2)
+	suppressPackageStartupMessages(require("graphics"))
+	suppressPackageStartupMessages(require("ggplot2"))
 	return(alpha(colorRampPalette(c(beamer$darkGreen, beamer$lightGreen))(n), alpha=alpha))
 }
 
 beamer.reds <- function(n, alpha = 1)
 # 	Generates n shades of red
 {
-	require(graphics)
-	require(ggplot2)
+	suppressPackageStartupMessages(require("graphics"))
+	suppressPackageStartupMessages(require("ggplot2"))
 	return(alpha(colorRampPalette(c(beamer$darkRed, beamer$lightRed))(n), alpha=alpha))
 }
 
 beamer.greys <- function(n, alpha = 1)
 # 	Generates n shades of grey
 {
-	require(graphics)
-	require(ggplot2)
+	suppressPackageStartupMessages(require("graphics"))
+	suppressPackageStartupMessages(require("ggplot2"))
 	return(alpha(colorRampPalette(c(beamer$darkGrey, beamer$lightGrey))(n), alpha=alpha))
 }

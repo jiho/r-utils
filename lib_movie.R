@@ -24,7 +24,7 @@ seq.image <- function(i, extension="png", pattern="", size.multi=1)
 	# build file name
 	name = paste(formatC(i, width=4, flag="0"), pattern,".",extension,sep="")
 
-	require("Cairo")
+	suppressPackageStartupMessages(require("Cairo"))
 
 	# close the previous device if it was a Cairo device opened here, so that the function can be called in a loop and produce successive images
 	if (names(dev.cur())=="Cairo" & length(dev.list())>=2) {

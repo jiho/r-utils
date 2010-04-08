@@ -267,6 +267,6 @@ persp3d.jo <- function(x=seq(0,1,len=nrow(z)), y=seq(0,1,len=ncol(z)), z, color=
 	aspect = compute.aspect(xlim, ylim, zlim, ...)
 
 	# plot
-	require("rgl")
+	suppressPackageStartupMessages(require("rgl"))
 	persp3d(x, y, z, color=color, xlim=xlim, ylim=ylim, zlim=zlim, aspect=aspect, ...)
 }
