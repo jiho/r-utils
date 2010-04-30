@@ -95,10 +95,15 @@ drape.color <- function(x, col)
 #	x			input matrix
 #	col		a vector of colors, usually a gradient
 {
-	n = length(col)
-	colMatrix = n-(x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T))*(n-1)
-	colMatrix = col[colMatrix]
-	return(colMatrix)	
+	# compute value at the center of each facet
+	nrx <- nrow(x)
+    ncx <- ncol(x)
+	xfacet <- x[-1, -1] + x[-1, -ncx] + x[-nrx, -1] + x[-nrx, -ncx]
+	# assign color
+	n <- length(col)
+	facetCol <- cut(xfacet, n)
+	facetCol <- col[facetCol]
+	return(facetCol)
 }
 
 
