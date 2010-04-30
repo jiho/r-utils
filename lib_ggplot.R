@@ -159,7 +159,7 @@ ggadd.arrows <- function(x=NULL, lon=x$lon, lat=x$lat, u=x$u, v=x$v, depth=x$dep
 	# Plot arrows
 	l = list()
 	if (withDepth) {
-		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor, colour=depth), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...),  scale_colour_gradient(low=beamerLightBlue, high=beamerDarkBlue, ...))
+		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor, colour=depth), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...),  scale_colour_gradient(low=beamer$lightBlue, high=beamer$darkBlue, ...))
 	} else {
 		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...))
 	}

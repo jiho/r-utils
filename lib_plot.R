@@ -95,7 +95,7 @@ frame <- function(x)
 {
 	cat("\n\n# ",x,"\n",rep("-",nchar(x)+2),"\n\n",sep="")
 	plot.new()
-	grid.text(x, gp=gpar(fontsize=20, col=beamerGrey))
+	grid.text(x, gp=gpar(fontsize=20, col=beamer$grey))
 }
 
 
