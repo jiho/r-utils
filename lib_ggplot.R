@@ -56,7 +56,7 @@ theme_white <- function(base_size = 12) {
     axis.ticks.length = unit(0.15, "cm"),
     axis.ticks.margin = unit(0.1, "cm"),
 
-    legend.background = theme_rect(colour="white"),
+    legend.background = theme_blank(),
     legend.key =        theme_rect(fill = "grey95", colour = "white"),
     legend.key.size =   unit(1.2, "lines"),
     legend.text =       theme_text(size = base_size * 0.8),
