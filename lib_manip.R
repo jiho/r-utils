@@ -140,51 +140,62 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 # Data re-organisation
 #------------------------------------------------------------
 
-frame2list <- function(X)
+frame2list <- function(X, names=c("x","y","value"))
 #
-#	Turn a data.frame with columns x, y (or lon, lat) and a value, into a list suitable for persp, contour and the like
+#	Turn a data.frame with two coordinates columns and a value, into a list suitable for persp, contour and the like
 #
-#	X		data.frame with components x, y (or lon, lat) and one other
+#	X		data.frame with components x, y (or lon, lat) and a value
 {
-	suppressPackageStartupMessages(require("reshape"))
-
 	if (!is.data.frame(X)) {
 		stop("Need a data.frame")
 	}
 
-	# reorder columns
-	if ( all(c("x","y") %in% names(X)) ) {
-		X = X[,c("x","y",setdiff(names(X),c("x","y")))]
-	} else if ( all(c("lon","lat") %in% names(X)) ) {
-		X = X[,c("lon","lat",setdiff(names(X),c("lon","lat")))]
+	if (all(names %in% names(X))) {
+		# if all names are in the data frame, extract the columns
+		X <- X[,names]
+	} else if (ncol(X) == 3) {
+		# if the data.frame names do not match but it has the right size, assume columns are in order and rename them
+		warning("Assuming columns ", paste(names(X), collapse=","), " are in fact ", paste(names, collapse=","))
+		names(X) <- names
+	} else {
+		stop("Cannot find coordinates and values in this data.frame. Check column names")
 	}
 
-	# renames them because its easier
-	names(X) = c("x","y","value")
-
-	# create output list
+	# convert into list
+	suppressPackageStartupMessages(require("reshape"))
 	out = list(x=sort(unique(X$x)),y=sort(unique(X$y)))
 	out$z = as.matrix(cast(X,x~y))
 
 	return(out)
 }
 
-list2frame <- function(X)
+list2frame <- function(X, names=c("x", "y", "z"))
 #
-#	Turn a list with components x, y, z (suitable for persp and the like) into a data.frame with columns x, y, z, suitable for ggplot
+#	Turn a list with three components (suitable for persp and the like) into a data.frame with columns x, y, z, suitable for ggplot
 #
 #	X		list with components x, y, and z
 {
-	suppressPackageStartupMessages(require("reshape"))
-
 	if (!is.list(X)) {
 		stop("Need a list")
 	}
 
-	if ( !all(names(X) %in% c("x","y","z")) ) {
-		stop("Need a list with 3 components named x, y and z")
+	if ( is.null(names(X)) & length(X) == 3 ) {
+		# if the list has no names and the right size, assume components are in order and rename them
+		warning("Assuming list components are in the order: ", paste(names, collapse=","))
+		names(X) <- names
+	} else if ( !all(names %in% names(X)) & length(X) == 3 ) {
+		# if the list names do not match but it has the right size, assume components are in order and rename them
+		warning("Assuming components ", paste(names(X), collapse=","), " are in fact ", paste(names, collapse=","))
+		names(X) <- names
+	} else if (all(names %in% names(X))) {
+		# if all names are in the list, extract the corresponding components
+		X <- X[names]
+	} else {
+		stop("Cannot find coordinates and values in this list. Check names")
 	}
 
+	# convert into data.frame
+	suppressPackageStartupMessages(require("reshape"))
 	out = melt(X$z,varnames=c("x","y"))
 	out$x = X$x[out$x]
 	out$y = X$y[out$y]
