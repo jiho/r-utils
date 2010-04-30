@@ -81,29 +81,29 @@ interp.x <- function(x, y=NULL, n=80, xo=seq(min(x),max(x),length=n), method="sp
 	return(data.frame(x=xo,y=yo))
 }
 
-interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(y),max(y),length=n), extrapolate=F, method="akima", output="list")
+interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(y),max(y),length=n), extrapolate=F, method=c("akima", "bilinear"), output=c("list","data.frame"))
 #
 #	Interpolates data z defined at points (x,y) on a new grid
 #
-#	x, y				coordinated of input points
-#	z					values at input points
-#	n					number of point in the new grid
-#	xo, yo			coordinates of output points
-#	extrapolate		if T, also define points outside the range of x,y when possible
+#	x, y                coordinated of input points
+#	z                   values at input points
+#	n                   number of point in the new grid
+#	xo, yo              coordinates of output points
+#	extrapolate         if T, also define points outside the range of x,y when possible
 #	method
-#		"akima"			bivariate smooth interpolation (package akima)
-#		"krigging"		kriging	(package fields) -- not yet implemented
-#		"bilinear"		fast bilinear (package fields)
+#	    "akima"         bivariate smooth interpolation (package akima)
+#	    "krigging"      kriging (package fields) -- not yet implemented
+#	    "bilinear"      fast bilinear (package fields)
 #	output
-#		"data.frame"	data.frame with columns x, y and z (for ggplot)
-#		"list,matrix"	list with components x, y, and z (for persp, contour)
+#	    "data.frame"    data.frame with columns x, y and z (for ggplot)
+#	    "list,matrix"   list with components x, y, and z (for persp, contour)
 #
 {
 	suppressPackageStartupMessages(require("reshape"))
 
 	# parse arguments
-	method = match.arg(method,c("akima","bilinear"))
-	output = match.arg(output,c("data.frame","list","matrix"))
+	method = match.arg(method)
+	output = match.arg(output)
 
 	if (method=="akima") {
 		# interpolate a regular grid from a set of irregular points
@@ -120,8 +120,7 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 
 		# original coordinates
 		objDat = data.frame(x=x,y=y,value=z)
-		obj = list(x=sort(unique(x)),y=sort(unique(y)))
-		obj$z = as.matrix(cast(objDat,x~y))
+		obj = list(x=sort(unique(x)), y=sort(unique(y)), z=as.matrix(cast(objDat,x~y)))
 
 		# interpolated locations
 		locs = make.surface.grid( list(xo, yo) )
@@ -129,8 +128,8 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 		out = interp.surface(obj, locs)
 		out = data.frame(x=locs[,1], y=locs[,2], z=out)
 
-		if (output %in% c("list","matrix")) {
-			out=frame2list(out)
+		if (output == "list") {
+			out = frame2list(out)
 		}
 	}
 
