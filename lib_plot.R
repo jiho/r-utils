@@ -102,7 +102,7 @@ frame <- function(x)
 # Quickly save graphics
 #------------------------------------------------------------
 
-s <- function(name, prefix=".", type=c("pdf","png"), paper=c("special", "beamer", "keynote", "latex"), width=4, height=3, units=c("in", "cm", "px"), dpi=NA_real_, pointsize=9, ...) {
+s <- function(name, prefix=".", type=c("pdf","png"), paper=c("special", "beamer", "keynote", "latex"), width=8, height=6, units=c("in", "cm", "px"), dpi=NA_real_, pointsize=9, ...) {
 
     # get arguments
     type <- match.arg(type)
