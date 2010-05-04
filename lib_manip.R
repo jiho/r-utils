@@ -233,20 +233,16 @@ oust <- function(x, ...)
 #	Remove an elements whose names are in ... from a list/data.frame
 #	(useful to pull out elements of a ggplot)
 #
-#	x		list or data.frame
+#	x	list or data.frame
+#	...	unquoted names of list elements or data.frame columns
 {
 	oldClass = class(x)
 	# convert all arguments in ... to a vector of characters:
 	# oust(x, foo, bar) => element=c("foo","bar")
 	element = as.character(match.call()[-1])[-1]
-	# if ... happens to contain only one element which is a vector of names, use them
-	if (length(element)==1) {
-		if (exists(element)) {
-			element = as.character(get(element))
-		}
-	}
 	# expand element names so that they can be abbreviated
 	element = match.arg(element, names(x), several.ok=T)
+	# remove the corresponding columns
 	x = x[setdiff(names(x),element)]
 	class(x) = oldClass
 	return(x)
@@ -255,23 +251,18 @@ oust <- function(x, ...)
 tsou <- function(x, ...)
 #
 #	Remove an elements whose names are NOT in ... from a list/data.frame
-#	(usefull to pull out elements of a ggplot)
+#	(useful to pull out elements of a ggplot)
 #
-#	x		list or data.frame
-#	...	vector of names or unquotted names of data.frame columns
+#	x	list or data.frame
+#	...	unquoted names of list elements or data.frame columns
 {
 	oldClass = class(x)
 	# convert all arguments in ... to a vector of characters:
 	# oust(x, foo, bar) => element=c("foo","bar")
 	element = as.character(match.call()[-1])[-1]
-	# if ... happens to contain only one element which is a vector of names, use them
-	if (length(element)==1) {
-		if (exists(element)) {
-			element = as.character(get(element))
-		}
-	}
 	# expand element names so that they can be abbreviated
 	element = match.arg(element, names(x), several.ok=T)
+	# select the corresponding columns
 	x = x[intersect(names(x),element)]
 	class(x) = oldClass
 	return(x)
