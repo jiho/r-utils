@@ -91,9 +91,8 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 #	xo, yo              coordinates of output points
 #	extrapolate         if T, also define points outside the range of x,y when possible
 #	method
-#	    "akima"         bivariate smooth interpolation (package akima)
-#	    "krigging"      kriging (package fields) -- not yet implemented
-#	    "bilinear"      fast bilinear (package fields)
+#	    "akima"         spline interpolation (package akima)
+#	    "bilinear"      simple bilinear
 #	output
 #	    "data.frame"    data.frame with columns x, y and z (for ggplot)
 #	    "list,matrix"   list with components x, y, and z (for persp, contour)
@@ -116,17 +115,42 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 
 	} else if (method == "bilinear") {
 		# interpolate a regular grid from a set of gridded points
-		suppressPackageStartupMessages(require("fields"))
 
 		# original coordinates
-		objDat = data.frame(x=x,y=y,value=z)
-		obj = list(x=sort(unique(x)), y=sort(unique(y)), z=as.matrix(cast(objDat,x~y)))
+		objDat <- data.frame(x=x, y=y, value=z)
+		x <- sort(unique(x))
+		y <- sort(unique(y))
+		z <- as.matrix(cast(objDat,x~y))
 
 		# interpolated locations
-		locs = make.surface.grid( list(xo, yo) )
+		locs <- expand.grid(xo, yo)
+		xNew <- locs[, 1]
+		yNew <- locs[, 2]
 
-		out = interp.surface(obj, locs)
-		out = data.frame(x=locs[,1], y=locs[,2], z=out)
+		# find indexes of cells in the original grid that contain the points to be interpolated
+		nx <- length(x)
+		ny <- length(y)
+		lx <- approx(x,1:nx,xNew)$y
+		ly <- approx(y,1:ny,yNew)$y
+		lx1 <- floor(lx)
+		ly1 <- floor(ly)
+
+		# distance between grid cells origins and points
+		ex <- lx - lx1
+		ey <- ly - ly1
+
+		# for points that are exactly on the top or right of the grid, shift one cell down (cf formula below where 1 is added to the index)
+		ex[lx1 == nx] <- 1
+		ey[ly1 == ny] <- 1
+		lx1[lx1 == nx] <- nx - 1
+		ly1[ly1 == ny] <- ny - 1
+				
+		# bilinear interpolation
+		out <- z[cbind(lx1  , ly1  )] * (1 - ex) * (1 - ey) + 
+		       z[cbind(lx1+1, ly1  )] * ex       * (1 - ey) +
+		       z[cbind(lx1  , ly1+1)] * (1 - ex) * ey + 
+		       z[cbind(lx1+1, ly1+1)] * ex       * ey
+		out <- data.frame(x=xNew, y=yNew, z=out)
 
 		if (output == "list") {
 			out = frame2list(out)
