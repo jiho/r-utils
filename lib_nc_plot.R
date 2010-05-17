@@ -163,7 +163,7 @@ slice2data <- function(slice)
 
 	# fetch real coordinates values
 	for (i in 1:length(coords)) {
-		var[,i] = coords[[1]]$vals[var[,i]]
+		var[,i] = coords[[i]]$vals[var[,i]]
 	}
 
 	return(var)
