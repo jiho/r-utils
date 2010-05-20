@@ -11,7 +11,7 @@
 #------------------------------------------------------------
 
 
-outliers <- function(x, method="hampel", factor=5.2)
+outliers <- function(x, method=c("hampel","g","bonferroni","custom"), factor=5.2)
 #
 #	Return the indices of outliers in x, according to:
 #		. Davies and Gather, The identification of multiple outliers, JASA 88 (1993), 782-801. for methods hampel, g and custom
@@ -19,7 +19,7 @@ outliers <- function(x, method="hampel", factor=5.2)
 #	In method custom, the higher the factor the less sensible the detection of outliers
 #
 {
-	method = match.arg(method,c("hampel","g","bonferroni","custom"))
+	method = match.arg(method)
 
 	if (method=="bonferroni") {
 		suppressPackageStartupMessages(require("car"))
