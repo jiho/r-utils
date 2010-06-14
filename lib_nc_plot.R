@@ -8,59 +8,6 @@
 #------------------------------------------------------------
 
 
-# Access NetCDF files
-#------------------------------------------------------------
-
-nc.open <- function(filename="opsime.nc")
-#
-#	Opens netCDF file and compute useful indexes
-{
-	suppressPackageStartupMessages(require("ncdf"))
-
-	# Opens the dataset and fetches its attributes
-	nc = open.ncdf(filename)
-	nc$att = nc.attr(nc)
-	return(nc)
-}
-
-nc.attr <- function(nc)
-#
-#	Read global attributes of given file
-{
-	att = list()
-	att$xStartin = att.get.ncdf(nc,0,att="xStartin")$value
-	att$yStartin = att.get.ncdf(nc,0,att="yStartin")$value
-	att$zStartin = att.get.ncdf(nc,0,att="zStartin")$value
-	att$tStartin = att.get.ncdf(nc,0,att="tStartin")$value
-	att$biolName = att.get.ncdf(nc,0,att="biolName")$value
-	att$swimSpeedSettlement = att.get.ncdf(nc,0,att="swimSpeedSettlement")$value
-	att$swimSpeedHatching = att.get.ncdf(nc,0,att="swimSpeedHatching")$value
-	att$eggDuration  =att.get.ncdf(nc,0,att="eggDuration")$value
-	att$preCompetencyDuration =att.get.ncdf(nc,0,att="preCompetencyDuration")$value
-	att$maxLarvalDuration = att.get.ncdf(nc,0,att="maxLarvalDuration")$value
-	att$swimEnduranceTimeSwum = att.get.ncdf(nc,0,att="swimEnduranceTimeSwum")$value
-	att$swimEnduranceSpeedSwum = att.get.ncdf(nc,0,att="swimEnduranceSpeedSwum")$value
-	return(att)
-}
-
-nc.close <- function(nc)
-#
-#	Close the netCDF file
-{
-	suppressPackageStartupMessages(require("ncdf"))
-	close.ncdf(nc)
-}
-
-nc.reopen <- function(nc)
-#
-#	Close and reopen the nc file (useful when it is updated)
-{
-	nc.close(nc)
-	ncNew = nc.open(nc$filename)
-	return(ncNew)
-}
-
-
 # Extract NetCDF variables
 #------------------------------------------------------------
 
