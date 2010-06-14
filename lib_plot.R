@@ -95,14 +95,14 @@ frame <- function(x)
 {
 	cat("\n\n# ",x,"\n",rep("-",nchar(x)+2),"\n\n",sep="")
 	plot.new()
-	grid.text(x, gp=gpar(fontsize=20, col=beamerGrey))
+	grid.text(x, gp=gpar(fontsize=20, col=beamer$grey))
 }
 
 
 # Quickly save graphics
 #------------------------------------------------------------
 
-s <- function(name, prefix=".", type=c("pdf","png"), paper=c("special", "beamer", "keynote", "latex"), width=4, height=3, units=c("in", "cm", "px"), dpi=NA_real_, pointsize=9, ...) {
+s <- function(name, prefix=".", type=c("pdf","png"), paper=c("special", "beamer", "keynote", "latex"), width=8, height=6, units=c("in", "cm", "px"), dpi=NA_real_, pointsize=9, ...) {
 
     # get arguments
     type <- match.arg(type)

@@ -56,7 +56,7 @@ theme_white <- function(base_size = 12) {
     axis.ticks.length = unit(0.15, "cm"),
     axis.ticks.margin = unit(0.1, "cm"),
 
-    legend.background = theme_rect(colour="white"),
+    legend.background = theme_blank(),
     legend.key =        theme_rect(fill = "grey95", colour = "white"),
     legend.key.size =   unit(1.2, "lines"),
     legend.text =       theme_text(size = base_size * 0.8),
@@ -159,7 +159,7 @@ ggadd.arrows <- function(x=NULL, lon=x$lon, lat=x$lat, u=x$u, v=x$v, depth=x$dep
 	# Plot arrows
 	l = list()
 	if (withDepth) {
-		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor, colour=depth), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...),  scale_colour_gradient(low=beamerLightBlue, high=beamerDarkBlue, ...))
+		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor, colour=depth), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...),  scale_colour_gradient(low=beamer$lightBlue, high=beamer$darkBlue, ...))
 	} else {
 		l = c(l, geom_segment(data=x, mapping=aes(x=lon, y=lat, xend=lon+u*scaleFactor, yend=lat+v*scaleFactor), arrow=arrow(length=unit(0.008,"npc"),angle=15), ...))
 	}

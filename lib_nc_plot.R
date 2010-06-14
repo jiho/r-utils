@@ -110,7 +110,7 @@ slice2data <- function(slice)
 
 	# fetch real coordinates values
 	for (i in 1:length(coords)) {
-		var[,i] = coords[[1]]$vals[var[,i]]
+		var[,i] = coords[[i]]$vals[var[,i]]
 	}
 
 	return(var)
@@ -231,7 +231,7 @@ ggadd.tile <- function(slice, min=NA, max=NA)
 	g = geom_tile(data=var,mapping=aes(x=x,y=y,fill=value))
 
 	# Axes labels
-	g = c(g, scale_x_continuous(paste(coords[[1]]$name, coords[[1]]$units)), scale_y_continuous(paste(coords[[2]]$name, coords[[2]]$units)) )
+	g = c(g, scale_x_continuous(paste(coords[[1]]$name, coords[[1]]$units), expand=c(0,0)), scale_y_continuous(paste(coords[[2]]$name, coords[[2]]$units), expand=c(0,0)) )
 
 	# Add nice color gradient
 	g = c(g,scale_fill_gradient2(paste(slice$var$name, slice$var$units), limits=c(min,max), low="blue", mid="yellow", high="red"))
