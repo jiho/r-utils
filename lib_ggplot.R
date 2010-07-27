@@ -35,9 +35,9 @@ theme_blight <- function(base_size = 12) {
     panel.grid.minor =  theme_line(colour = beamer$lightBlock, size = 0.25),
     panel.margin =      unit(0.25, "lines"),
 
-    strip.background =  theme_rect(beamer$defaultAddedBlue, colour = "white"),
-    strip.text.x =      theme_text(size = base_size * 0.8),
-    strip.text.y =      theme_text(size = base_size * 0.8, angle = -90),
+    strip.background =  theme_rect(beamer$defaultAddedBlue, colour=NA),
+    strip.text.x =      theme_text(size = base_size * 0.8, colour = "white"),
+    strip.text.y =      theme_text(size = base_size * 0.8, angle = -90, colour = "white"),
 
     plot.background =   theme_rect(colour = NA, fill = "white"),
     plot.title =        theme_text(size = base_size * 1.2),
