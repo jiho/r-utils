@@ -104,7 +104,7 @@ theme_simple <- function(base_size = 12) {
 	panel.grid.minor =  theme_blank(),
     panel.margin =      unit(0, "lines"),
 
-    strip.background =  theme_rect(fill="grey30", colour = NA),
+    strip.background =  theme_rect(fill="grey20", colour = NA),
     strip.text.x =      theme_text(size = base_size * 0.8, colour="white"),
     strip.text.y =      theme_text(size = base_size * 0.8, angle = -90, colour="white"),
 
