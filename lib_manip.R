@@ -37,7 +37,7 @@ outliers <- function(x, method=c("hampel","g","bonferroni","custom"), factor=5.2
 		} else if (method=="custom") {
 			factor = factor
 		}
-		return(which(abs(x-median(x))>(factor*mad(x))))
+		return(which(abs(x-median(x, na.rm=TRUE))>(factor*mad(x, na.rm=TRUE))))
 	}
 }
 
