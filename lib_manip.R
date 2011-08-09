@@ -23,7 +23,7 @@ outliers <- function(x, method=c("hampel","g","bonferroni","custom"), factor=5.2
 
 	if (method=="bonferroni") {
 		suppressPackageStartupMessages(require("car"))
-		return(as.numeric(outlier.test(lm(x~1))$obs))
+		return(as.numeric(outlierTest(lm(x~1))$obs))
 	} else {
 		n = length(x)
 		if (method=="hampel") {
