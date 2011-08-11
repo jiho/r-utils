@@ -25,10 +25,10 @@ outliers <- function(x, method=c("hampel","g","bonferroni","custom"), factor=5.2
 		suppressPackageStartupMessages(require("car"))
 		return(as.numeric(outlierTest(lm(x~1))$obs))
 	} else {
-		n = length(x)
 		if (method=="hampel") {
 			factor = 5.2
 		} else if (method=="g") {
+    		n = length(x)
 			if (n%%2==0) {
 				factor = 2.906+11.99*(n-6)^-0.5651
 			} else {
