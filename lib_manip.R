@@ -180,11 +180,11 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 		ey[ly1 == ny] <- 1
 		lx1[lx1 == nx] <- nx - 1
 		ly1[ly1 == ny] <- ny - 1
-				
+
 		# bilinear interpolation
-		out <- z[cbind(lx1  , ly1  )] * (1 - ex) * (1 - ey) + 
+		out <- z[cbind(lx1  , ly1  )] * (1 - ex) * (1 - ey) +
 		       z[cbind(lx1+1, ly1  )] * ex       * (1 - ey) +
-		       z[cbind(lx1  , ly1+1)] * (1 - ex) * ey + 
+		       z[cbind(lx1  , ly1+1)] * (1 - ex) * ey +
 		       z[cbind(lx1+1, ly1+1)] * ex       * ey
 		out <- data.frame(x=xNew, y=yNew, z=out)
 
