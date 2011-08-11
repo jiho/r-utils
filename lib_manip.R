@@ -42,6 +42,42 @@ outliers <- function(x, method=c("hampel","g","bonferroni","custom"), factor=5.2
 }
 
 
+despike <- function(x, window=max(length(x)/5, 10))
+#
+#   Remove spikes in a signal by detecting outliers using the Median Absolute Deviation in a moving window along the signal
+#   x       series (vector) of numerical data, somewhat regular
+#   window  size of the window
+#
+{
+    # prepare storage to count the number of times a point is checked and detected as an outlier
+    count <- x
+    out <- x
+    # initialize to 0
+    count[] <- 0
+    out[] <- 0
+
+    for (i in 1:(length(x)-window+1)) {
+        # select data in the window
+        idx <- i:(i+window-1)
+        xi <- x[idx]
+        # count this data as checked once
+        count[idx] <- count[idx] + 1
+        # detect outliers in the window using MAD
+        # NB: recompute everything here rather than using outliers() or mad() for speed puposes
+        absDev <- abs(xi - median(xi, na.rm=T))
+        mad <- median(absDev, na.rm=T)*1.4826
+        outi <- which(absDev > 5.2*mad)
+        # mark those positions as outliers
+        out[i + outi - 1] <- out[i + outi - 1] + 1
+    }
+
+    # remove the points consistently (i.e. in all windows) identified as outliers
+    x[out == count] <- NA
+
+    return(x)
+}
+
+
 # Sub-sampling or interpolation
 #------------------------------------------------------------
 
