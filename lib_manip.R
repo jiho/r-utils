@@ -342,6 +342,7 @@ extract <- function(x, ..., drop=FALSE)
 
 	# extract only those in common between x and those possibilities
 	out = sorted.merge(x, allSubsets)
+	# TODO: use join from plyr here
 
 	# reorder output columns to match input
 	out = out[names(x)]
@@ -352,6 +353,7 @@ extract <- function(x, ..., drop=FALSE)
 		factCols = sapply(cout, is.factor)
 		cout[factCols] = lapply(cout[factCols],factor)
 		out[names(subsets)] = cout
+		# TODO: use drop.levels here
 	}
 
 	return(out)
