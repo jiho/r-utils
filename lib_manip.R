@@ -23,12 +23,12 @@ outliers <- function(x, method=c("hampel","g","bonferroni","custom"), factor=5.2
 
 	if (method=="bonferroni") {
 		suppressPackageStartupMessages(require("car"))
-		return(as.numeric(outlier.test(lm(x~1))$obs))
+		return(as.numeric(outlierTest(lm(x~1))$obs))
 	} else {
-		n = length(x)
 		if (method=="hampel") {
 			factor = 5.2
 		} else if (method=="g") {
+    		n = length(x)
 			if (n%%2==0) {
 				factor = 2.906+11.99*(n-6)^-0.5651
 			} else {
@@ -37,8 +37,44 @@ outliers <- function(x, method=c("hampel","g","bonferroni","custom"), factor=5.2
 		} else if (method=="custom") {
 			factor = factor
 		}
-		return(which(abs(x-median(x))>(factor*mad(x))))
+		return(which(abs(x-median(x, na.rm=TRUE))>(factor*mad(x, na.rm=TRUE))))
 	}
+}
+
+
+despike <- function(x, window=max(length(x)/5, 10))
+#
+#   Remove spikes in a signal by detecting outliers using the Median Absolute Deviation in a moving window along the signal
+#   x       series (vector) of numerical data, somewhat regular
+#   window  size of the window
+#
+{
+    # prepare storage to count the number of times a point is checked and detected as an outlier
+    count <- x
+    out <- x
+    # initialize to 0
+    count[] <- 0
+    out[] <- 0
+
+    for (i in 1:(length(x)-window+1)) {
+        # select data in the window
+        idx <- i:(i+window-1)
+        xi <- x[idx]
+        # count this data as checked once
+        count[idx] <- count[idx] + 1
+        # detect outliers in the window using MAD
+        # NB: recompute everything here rather than using outliers() or mad() for speed puposes
+        absDev <- abs(xi - median(xi, na.rm=T))
+        mad <- median(absDev, na.rm=T)*1.4826
+        outi <- which(absDev > 5.2*mad)
+        # mark those positions as outliers
+        out[i + outi - 1] <- out[i + outi - 1] + 1
+    }
+
+    # remove the points consistently (i.e. in all windows) identified as outliers
+    x[out == count] <- NA
+
+    return(x)
 }
 
 
@@ -144,11 +180,11 @@ interp.xy <- function(x, y, z, n=80, xo=seq(min(x),max(x),length=n), yo=seq(min(
 		ey[ly1 == ny] <- 1
 		lx1[lx1 == nx] <- nx - 1
 		ly1[ly1 == ny] <- ny - 1
-				
+
 		# bilinear interpolation
-		out <- z[cbind(lx1  , ly1  )] * (1 - ex) * (1 - ey) + 
+		out <- z[cbind(lx1  , ly1  )] * (1 - ex) * (1 - ey) +
 		       z[cbind(lx1+1, ly1  )] * ex       * (1 - ey) +
-		       z[cbind(lx1  , ly1+1)] * (1 - ex) * ey + 
+		       z[cbind(lx1  , ly1+1)] * (1 - ex) * ey +
 		       z[cbind(lx1+1, ly1+1)] * ex       * ey
 		out <- data.frame(x=xNew, y=yNew, z=out)
 
