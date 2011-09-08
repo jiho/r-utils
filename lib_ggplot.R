@@ -160,55 +160,44 @@ draw_range <- function(x, y, colour="black", ...)
 	return(g)
 }
 
-geom_violin <- function(data, mapping, bw="nrd0", adjust=1, kernel="gaussian", ...)
+geom_violin <- function(data, mapping, ...)
 #
-#	geom-like function to draw violin plots with ggplot2. Analogous to boxplots
-#	default aesthetics:
+#	Geom-like function to draw violin plots with ggplot2. Analogous to boxplots.
 #	x		grouping factor, on the x axis
 #	y		variable
-#	arguments passed to density
-#	bw
-#	adjust
-#	kernel
-#	...	passed to density and to geom_polygon
+#	...     passed to density and to geom_polygon
 #
 {
-	x = deparse(mapping$x)
-	y = deparse(mapping$y)
-	molten = melt(data, measure.var=y)
-	nbByX = cast(molten, formula=paste(x, "~ variable"), fun.aggregate=length)
+	x <- deparse(mapping$x)
+	y <- deparse(mapping$y)
 
-	# remove levels for which there are less thant 2 points because density estimate fails
-	molten = molten[molten[[x]]%in%(nbByX[nbByX[y]>2,x]),]
-	molten[[x]] = factor(molten[[x]])	# remove potentially absent factor levels?
-
-	# densities = cast(molten, formula=paste(x, "~ variable"), fun.aggregate=density)
-	# why doesn't this work?
-	# do it 'by hand'
-
-	moltenL = split(molten$value, molten[[x]])
-
-	densities = lapply(moltenL, function(x, bw, adjust, kernel, ...){
-		# compute density
-		out = density(x, bw=bw, adjust=adjust, kernel=kernel, ...)
-		out = data.frame(y=out$x, dens=out$y)
-		# scale density
-		out$dens = out$dens/max(out$dens) * 0.45 # max is 0.45
-		# duplicate it to make a nice polygon
-		out2 = data.frame(y=rev(out$y), dens=-rev(out$dens))
-		out = rbind(out,out2,NA)
-	}, bw=bw, adjust=adjust, kernel=kernel, ...)
-
-	# x scale has step of 1
-	for (i in 1:length(densities)) {
-		densities[[i]]$dens = i + densities[[i]]$dens
+	# consistency test
+	if (is.numeric(data[,x])) {
+	   stop("geom_violin requires a discrete variable on the x axis")
 	}
-	xLabels = names(densities)
-	densities = do.call("rbind",densities)
+
+	# compute density
+	d <- ddply(data, x, function(X, y, ...) {
+	    # compute density
+	    dens <- density(X[,y], na.rm=TRUE, ...)
+		# scale to a max of 0.45
+		dens$y <- dens$y / max(dens$y) * 0.45
+		# compute the symetry to get a full polygon
+		data.frame(x=c(dens$x, rev(dens$x)), y=c(dens$y, -rev(dens$y)))
+	}, y=y, ...)
+
+	# rename columns according to their real meaning
+	d <- rename(d, c(x=y, y="dens"))
+
+	# compute the fake x scale
+	d[,x] <- factor(d[,x], exclude=NULL)
+	xlevels <- levels(d[,x])
+	xshift <- as.numeric(d[,x])
+	d$dens <- xshift + d$dens
 
 	# build geom and set correct scale
-	g = geom_polygon(data=densities, mapping=aes(x=dens, y=y), ...)
-	s = scale_x_continuous(breaks=1:length(xLabels), labels=xLabels)
+	g = geom_polygon(data=d, mapping=aes_string(x="dens", y=y, group=x), ...)
+	s = scale_x_continuous(name=y, breaks=1:length(xlevels), labels=xlevels)
 
 	return(list(g,s))
 }
