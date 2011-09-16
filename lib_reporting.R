@@ -29,23 +29,41 @@ print.signif <- function(x, stars=TRUE, digits=3)
 	return(out)
 }
 
-write.out <- function(...)
+write.out <- function(..., prefix=NULL)
 #
 #   Write each of the arguments to a CSV file named after the argument
 #   ...     data.frames to write to csv files
+#   prefix  prefix directory in which to store the results
 #
 {
     # get arguments
     vars <- list(...)
-    
+
     # get names of arguments
     varNames <- sapply(substitute(list(...))[-1], deparse)
-    
+
+    # define and create the prefix directory when necessary
+    if (is.null(prefix)) {
+        prefix <- ""
+    } else {
+        if (!file.exists(prefix)) {
+            dir.create(prefix, recursive=TRUE)
+        }
+        prefix <- paste(prefix, "/", sep="")
+    }
+
     # write each in a csv file
     for (i in 1:length(vars)) {
-        write.table(vars[[i]], file=paste(varNames[i], ".csv", sep=""), sep=",", row.names=FALSE)
+        cVar <- vars[[i]]
+        if (is.data.frame(cVar)) {
+            write.table(cVar, file=paste(prefix, varNames[i], ".csv", sep=""), sep=",", row.names=FALSE)
+        } else {
+            sink(file=paste(prefix, varNames[i], ".txt", sep=""))
+            print(cVar)
+            sink()
+        }
     }
-    
+
     # return a dummy value
-    return(invisible())        
+    return(invisible())
 }
