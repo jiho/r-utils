@@ -364,6 +364,7 @@ sorted.merge <- function(x, y, ...)
 #	Merges both arguments with merge and keeps the order in x
 #
 {
+    warning("sorted.merge is deprecated, using plyr::join")
 	m <- merge(cbind(id=seq_len(nrow(x)), x), y, ...)
 	m <- m[order(m$id), !names(m)%in%"id"]
 	return(m)
