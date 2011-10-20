@@ -359,6 +359,73 @@ extract <- function(x, ..., drop=FALSE)
 	return(out)
 }
 
+select <- function(x, ..., drop=FALSE)
+#
+#	Restricts information in x to the lines matching the conditions in ...
+# 	The selection criteria take the form: variableName = valuesExtracted
+#		e.g. family = c("pomacentridae","acanthuridae")
+#	Both the names of the variables and the names of the values can be abbreviated as long as the abbreviation is unambiguous
+#		e.g. fam = c("pomacent","acanth")
+#	NA or NULL values extract everything (i.e. are equivalent to not specifying the condition at all)
+#
+{
+    # TODO Allow conditions of the type x > 1 in the selection arguments, just as an SQL select would.
+
+	# get selection variables
+	subsets = list(...)
+
+	# if there are no extraction arguments, just return the input
+	if (length(subsets) == 0) {
+		return(x)
+	}
+
+	# allow the selection variables' names to be abbreviated
+	names(subsets) = match.arg(names(subsets), names(x), several.ok=TRUE)
+	if (any(is.na(names(subsets)))) {
+		stop(paste("Ambiguity on extraction variables. Identify one in:", paste(names(x), collapse=" "), sep="\n"))
+	}
+
+	# remove NA or NULL selection variables (i.e. keep everything)
+	naOrNull = sapply(subsets, function(X) { is.null(X) | all(is.na(X)) })
+	subsets = subsets[!naOrNull]
+
+	# allow selection variables which are character-based to be abbreviated
+	chars = which(sapply(subsets, function(X) { is.character(X) | is.factor(X) }))
+	if (length(chars) > 0) {
+    	# compute all posibilities for those
+    	alls = lapply(x[names(subsets)[chars]], unique)
+    	# match
+    	for (i in 1:length(subsets[chars])) {
+    		arg = paste("^", subsets[chars][[i]], sep="")
+    		all = as.character(alls[[i]])
+    		matches = grep(arg, all, value=TRUE)
+    		subsets[chars][[i]] = matches
+    	}
+	}
+
+	# compute all possibilities
+	allSubsets = expand.grid(subsets, stringsAsFactors=FALSE)
+
+	# extract only those in common between x and those possibilities
+	suppressMessages(library("plyr"))
+	out = join(x, allSubsets, type="inner", by=names(allSubsets))
+
+	# reorder output columns to match input
+	out = out[names(x)]
+
+	# recompute factor levels if necessary
+	if (drop) {
+		out = droplevels(out)
+	}
+
+    # check the size of the selection
+    if (nrow(out) == 0) {
+        warning("No compatible selection")
+    }
+
+	return(out)
+}
+
 sorted.merge <- function(x, y, ...)
 #
 #	Merges both arguments with merge and keeps the order in x
