@@ -9,7 +9,7 @@
 seq.image <- function(i, extension="png", pattern="", size.multi=1)
 #
 #	Open a new file with a sequential name and plot a bitmap inside it
-#	The function is meant to be includd in a loop. It will close the previous image and open a new one.
+#	The function is meant to be included in a loop. It will close the previous image and open a new one.
 #
 #	i				index to be converted to a sequential name
 #	extension	type fo the file to plot in (png, jpeg)
