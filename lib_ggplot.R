@@ -20,12 +20,12 @@ theme_blight <- function(base_size = 12, base_family = "") {
     rgb(214,215,239,maxColorValue=255) -> beamer$lightBlockHeader
     rgb(141,145,208,maxColorValue=255) -> beamer$defaultAddedBlue
 
-    theme$panel.background =   theme_rect(fill = beamer$lightBlockHeader, colour = NA)
-    theme$panel.grid.major =   theme_line(colour = beamer$lightBlock)
-    theme$panel.grid.minor =   theme_line(colour = beamer$lightBlock, size = 0.25)
-    theme$strip.background =   theme_rect(beamer$defaultAddedBlue, colour=NA)
-    theme$strip.text.x =       theme_text(size = base_size * 0.8, colour = "white")
-    theme$strip.text.y =       theme_text(size = base_size * 0.8, angle = -90, colour = "white")
+    theme$panel.background =   element_rect(fill = beamer$lightBlockHeader, colour = NA)
+    theme$panel.grid.major =   element_line(colour = beamer$lightBlock)
+    theme$panel.grid.minor =   element_line(colour = beamer$lightBlock, size = 0.25)
+    theme$strip.background =   element_rect(beamer$defaultAddedBlue, colour=NA)
+    theme$strip.text.x =       element_text(size = base_size * 0.8, colour = "white")
+    theme$strip.text.y =       element_text(size = base_size * 0.8, angle = -90, colour = "white")
 
     return(theme)
 }
@@ -33,15 +33,15 @@ theme_blight <- function(base_size = 12, base_family = "") {
 theme_simple <- function(base_size = 12, base_family = "") {
     theme <- theme_set(theme_grey(base_size = 12, base_family = ""))
 
-    theme$legend.background = theme_blank()
-    theme$legend.key =        theme_blank()
-    theme$panel.background =  theme_blank()
-    theme$panel.border =      theme_blank()
-    theme$panel.grid.major =  theme_blank()
-    theme$panel.grid.minor =  theme_blank()
-    theme$strip.background =  theme_blank()
-    theme$strip.text.x =      theme_text(family = base_family, size = base_size * 0.8, face = "bold")
-    theme$strip.text.y =      theme_text(family = base_family, size = base_size * 0.8, face = "bold", angle = -90)
+    theme$legend.background = element_blank()
+    theme$legend.key =        element_blank()
+    theme$panel.background =  element_blank()
+    theme$panel.border =      element_blank()
+    theme$panel.grid.major =  element_blank()
+    theme$panel.grid.minor =  element_blank()
+    theme$strip.background =  element_blank()
+    theme$strip.text.x =      element_text(family = base_family, size = base_size * 0.8, face = "bold")
+    theme$strip.text.y =      element_text(family = base_family, size = base_size * 0.8, face = "bold", angle = -90)
 
     return(theme)
 }
