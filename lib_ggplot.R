@@ -160,7 +160,7 @@ draw_range <- function(x, y, colour="black", ...)
 	return(g)
 }
 
-geom_violin <- function(mapping, data, ...)
+ggviolin <- function(mapping, data, ...)
 #
 #	Geom-like function to draw violin plots with ggplot2. Analogous to boxplots.
 #	x		grouping factor, on the x axis
