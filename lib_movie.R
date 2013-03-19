@@ -75,16 +75,17 @@ img <- function(pattern="", extension=c("png", "jpeg", "jpg"), width=800, height
     return(invisible(name))
 }
 
-encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp4",sep=""), pattern="", extension=c("png", "jpg"), fps=6, codec=c("h264","h264lossless","mpeg4","divx","xvid"), clean=F, verbose=F)
+encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp4",sep=""), pattern="", extension=c("png", "jpg"), fps=6, codec=c("h264","mpeg4","divx","xvid"), clean=F, verbose=F)
 #
 #	Encode a sequence of images into a movie using ffmpeg
 #
 #	name        name of the output movie, extension determines movie type
-#	extension   type of the images to encode
 #	pattern     pattern to look for in the names of the images to encode
+#	extension   type of the images to encode
 #	fps         frame per second of the movie
 #	codec       video codec
 #	clean       whether to remove image files when done
+#   verbose     output diagnostic info from ffmpeg
 #
 {
     # detect arguments
@@ -115,9 +116,7 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 
 	# codec selection
     if (codec=="h264") {
-        opts <- "-vcodec libx264 -vpre max -crf 16 -vpre baseline"
-	} else if (codec=="h264lossless") {
-		opts <- "-vcodec libx264 -vcodec libx264 -vpre lossless_max -vpre baseline"
+        opts <- "-vcodec libx264 -crf 16 -preset fast -tune stillimage -profile:v baseline"
 	} else 	if (codec=="mpeg4") {
         opts <- "-vcodec mpeg4 -b:v 2000k -bt 4000k"
     }
