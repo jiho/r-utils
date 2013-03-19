@@ -40,9 +40,11 @@ img <- function(pattern="", extension=c("png", "jpeg", "jpg"), width=800, height
 #
 #   Open a bitmap device to plot a sequence of images (used to encode a movie)
 #
-#	extension	type of the file to plot
 #	pattern		pattern to add to the filename, before the extension
-#	size.multi	size multiplier. base size is 800*592
+#	extension	type of the file to plot
+#	width       size of the plot in pixels
+#               will be rounded to the nearest 16px for better compression when encoding video
+#   height
 #
 {
     # get arguments
@@ -117,7 +119,7 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 	} else if (codec=="h264lossless") {
 		opts <- "-vcodec libx264 -vcodec libx264 -vpre lossless_max -vpre baseline"
 	} else 	if (codec=="mpeg4") {
-        opts <- "-vcodec mpeg4 -b 2000k -bt 4000k"
+        opts <- "-vcodec mpeg4 -b:v 2000k -bt 4000k"
     }
 
 	# encoding
@@ -133,3 +135,4 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
         system(paste("rm -f ", pattern, "*.", extension, sep=""))
 	}
 }
+
