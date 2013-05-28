@@ -40,8 +40,8 @@ theme_simple <- function(base_size = 12, base_family = "") {
     theme$panel.grid.major =  element_blank()
     theme$panel.grid.minor =  element_blank()
     theme$strip.background =  element_blank()
-    theme$strip.text.x =      element_text(family = base_family, size = base_size * 0.8, face = "bold")
-    theme$strip.text.y =      element_text(family = base_family, size = base_size * 0.8, face = "bold", angle = -90)
+    theme$strip.text.x =      element_text(family = base_family, size = base_size * 1, face = "bold")
+    theme$strip.text.y =      element_text(family = base_family, size = base_size * 1, face = "bold", angle = -90)
 
     return(theme)
 }
