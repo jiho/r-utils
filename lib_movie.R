@@ -116,7 +116,7 @@ encode.movie <- function(name=paste(format(Sys.time(),"%Y%m%d-%H%M-"),codec,".mp
 
 	# codec selection
     if (codec=="h264") {
-        opts <- "-vcodec libx264 -crf 16 -preset fast -tune stillimage -profile:v baseline"
+        opts <- "-vcodec libx264 -crf 16 -preset fast -tune stillimage"
 	} else 	if (codec=="mpeg4") {
         opts <- "-vcodec mpeg4 -b:v 2000k -bt 4000k"
     }
