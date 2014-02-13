@@ -1,0 +1,3 @@
+# My miscellaneous R functions
+
+This should really be a package or a set of packages (Cf. `hmisc` for example). So far I've used it by including it as a git submodule in other projects. It has the advantage of making things self-contained at least...
