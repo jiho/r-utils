@@ -35,13 +35,13 @@ change.level <- function(color, offset)
 	return(colors[101+offset])
 }
 
-lighter <- function(color, offset=40)
+lighten <- function(color, offset=40)
 #	Make a color lighter
 {
 	return(change.level(color, offset))
 }
 
-darker <- function(color, offset=40)
+darken <- function(color, offset=40)
 #	Make a color darker
 {
 	return(change.level(color, -offset))
